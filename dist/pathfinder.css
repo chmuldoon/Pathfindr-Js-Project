@@ -6,14 +6,18 @@ html, body, figure, figcaption, ul, li, h1 {
   text-align: inherit;
 }
 
-ul {
-  list-style: none;
-}
-
 body {
   font-family: sans-serif;
   text-align: center;
   font-weight: bold;
+  align-content: center
+}
+.pathfinder {
+  margin-top: 40px; 
+  margin-left: auto;
+  margin-right: auto;
+  height: 620px;
+  width: 1240px;
 }
 
 h1 {
@@ -21,18 +25,23 @@ h1 {
   margin: 30px;
 }
 
+
 ul {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
-  margin: 30px auto;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
   width: 100%;
   border: .5px solid gray;
+
 }
 
 li {
   z-index: 1;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   border: .5px solid gray;
   background:lightsteelblue;
   cursor: pointer;
@@ -41,7 +50,21 @@ li {
 li:hover {
   z-index: 2;
   background-color: aquamarine;
-  border: 3px solid aquamarine;
+  border: .5px solid aquamarine;
 
 
+}
+
+.wall {
+  background-color: gray;
+}
+
+.frog {
+  background-color: green;
+  border: .5px solid green;
+}
+
+.finish {
+  background-image: url(../assets/photos/finish.jpg);
+  background-size: 200%
 }

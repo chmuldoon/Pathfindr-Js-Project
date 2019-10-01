@@ -2,11 +2,7 @@ import TileNode from "./tile_node";
 
 class Board{
   constructor(appLogic, $el){
-    this.appLogic = appLogic;
-    this.$el = $el;
-
-    this.setupGrid();
-    this.bindEvents();
+    this.grid = Board.makeGrid
   }
   bindEvents() {
     // install a handler on the `li` elements inside the board.
@@ -14,25 +10,23 @@ class Board{
       const $square = $(e.currentTarget);
     }));
   }
+  static makeGrid() {
+    const grid = [];
 
-  setupGrid() {
-    const $ul = $("<ul>")
-    for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
-      for (let coldIdx = 0; coldIdx < 50; coldIdx++) {
-        $li.data("pos", [rowIdx, coldIdx]);
-        $ul.append($li);
+    for (let i = 0; i < 20; i++) {
+      grid.push([]);
+      for (let j = 0; j < 40; j++) {
+        grid[i].push([i, j]);
       }
     }
-    this.$el.append($ul);
+    return grid;
   }
+
+
 
   
 
 }
-Board.DIRS = [
-  [0, 1], [1, 1], [1, 0],
-  [1, -1], [0, -1], [-1, -1],
-  [-1, 0], [-1, 1]
-];
+
 
 export default Board; 

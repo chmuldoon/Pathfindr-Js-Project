@@ -118,7 +118,19 @@ eval("__webpack_require__.r(__webpack_exports__);\nclass MainAppLogic {\n  const
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n\nclass MainAppView {\n  constructor(appLogic, $el) {\n    this.appLogic = appLogic;\n    this.$el = $el;\n\n    this.makeGrid();\n    this.bindEvents();\n  }\n  bindEvents() {\n    // install a handler on the `li` elements inside the board.\n    this.$el.on(\"click\", \"li\", (event => {\n      const $square = $(event.currentTarget);\n    }));\n  }\n\n  makeGrid() {\n    const $ul = $(\"<ul>\")\n    for (let rowIdx = 0; rowIdx < 20; rowIdx++) {\n      for (let coldIdx = 0; coldIdx < 40; coldIdx++) {\n        let $li = $(\"<li>\");\n        $li.data(\"pos\", [rowIdx, coldIdx]);\n        $ul.append($li);\n      }\n    }\n    this.$el.append($ul);\n  }\n\n}\n// GameView.MOVES = {\n//   w: 2,\n//   a: -1,\n//   d: 1,\n// };\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (MainAppView);\n\n//# sourceURL=webpack:///./src/main_app_view.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _tile_node__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tile_node */ \"./src/tile_node.js\");\n\n\nclass MainAppView {\n  constructor(appLogic, $el) {\n    this.appLogic = appLogic;\n    this.$el = $el;\n    this.helDown = false\n    this.makeGrid();\n    this.addFrog();\n    this.addFinish();\n    this.bindEvents();\n  }\n  bindEvents() {\n    // install a handler on the `li` elements inside the board.\n    this.$el.on(\"mousedown\", \"li\", event => {\n      this.helDown = true\n    })\n    this.$el.on(\"mouseup\", \"li\", event => {\n      this.helDown = false\n    })\n\n    this.$el.on(\"mouseenter\", \"li\", (event => {\n      \n      this.toggleWall(event.currentTarget)\n    \n      \n    }));\n\n    console.log(event.currentTarget.className)\n  }\n\n  toggleWall(eventTarget){\n    if (this.helDown && !$(eventTarget).hasClass(\"wall\") && !$(eventTarget).hasClass(\"frog\")) {\n      $(eventTarget).addClass(\"wall\");\n      $(eventTarget).data(\"value\", \"obstacle\")\n    \n    } else if (this.helDown && ($(eventTarget).hasClass(\"wall\"))) {\n      $(eventTarget).removeClass(\"wall\")\n      $(eventTarget).data(\"value\", null)\n    }\n  }\n\n  addFrog(){\n    $(\"li[pos='9,19']\").data().node.value = \"frog\";\n    $(\"li[pos='9,10']\").addClass(\"frog\");\n  }\n  addFinish() {\n    $(\"li[pos='9,30']\").data().node.value = \"finish\";\n    $(\"li[pos='9,30']\").addClass(\"finish\");\n  }\n\n\n  moveFrog(){\n\n  }\n  \n  // addWall(){\n  //   if (!$(eventTarget).hasClass(\"wall\")) {\n  //     $(eventTarget).addClass(\"wall\")\n  //   }\n  // }\n  // removeWall(){\n  //   if ($(eventTarget).hasClass(\"wall\")) {\n  //     $(eventTarget).removeClass(\"wall\")\n  //   }\n  // }\n\n\n  makeGrid() {\n    const $ul = $(\"<ul>\")\n    for (let rowIdx = 0; rowIdx < 20; rowIdx++) {\n      for (let coldIdx = 0; coldIdx < 40; coldIdx++) {\n        let $li = $(\"<li>\");\n        let node = new _tile_node__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({ pos: [rowIdx, coldIdx] })\n        $li.attr(\"pos\", [rowIdx, coldIdx]);\n        $li.data(\"node\", node);\n        $ul.append($li);\n        // console.log($li.data())\n      }\n    }\n    this.$el.append($ul);\n  }\n\n}\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (MainAppView);\n\n//# sourceURL=webpack:///./src/main_app_view.js?");
+
+/***/ }),
+
+/***/ "./src/tile_node.js":
+/*!**************************!*\
+  !*** ./src/tile_node.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\nclass TileNode{\n  constructor(options){\n    \n    this.pos = options.pos;\n    this.value = options.value || null;\n  }\n  \n\n\n}\n\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (TileNode); \n\n//# sourceURL=webpack:///./src/tile_node.js?");
 
 /***/ })
 
