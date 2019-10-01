@@ -6,12 +6,16 @@ class MainAppView {
     this.$el = $el;
     this.helDown = false
     this.makeGrid();
-    this.addFrog();
     this.addFinish();
+    this.addFrog();
     this.bindEvents();
   }
   bindEvents() {
     // install a handler on the `li` elements inside the board.
+    this.$el.on("click", "li", event => {
+  
+      console.log($(event.currentTarget).data().node)
+    })
     this.$el.on("mousedown", "li", event => {
       this.helDown = true
     })
@@ -30,23 +34,25 @@ class MainAppView {
   }
 
   toggleWall(eventTarget){
-    if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("frog")) {
+    if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("special")) {
       $(eventTarget).addClass("wall");
-      $(eventTarget).data("value", "obstacle")
+      // debugger
+      $(eventTarget).data().node.value = "obstacle";
     
     } else if (this.helDown && ($(eventTarget).hasClass("wall"))) {
       $(eventTarget).removeClass("wall")
+      $(eventTarget).data().node.value = null
       $(eventTarget).data("value", null)
     }
   }
 
   addFrog(){
-    $("li[pos='9,19']").data().node.value = "frog";
-    $("li[pos='9,10']").addClass("frog");
+    $("li[pos='9,10']").data().node.value = "frog";
+    $("li[pos='9,10']").addClass("frog").addClass("special")
   }
   addFinish() {
     $("li[pos='9,30']").data().node.value = "finish";
-    $("li[pos='9,30']").addClass("finish");
+    $("li[pos='9,30']").addClass("finish").addClass("special");
   }
 
 
@@ -67,13 +73,14 @@ class MainAppView {
 
 
   makeGrid() {
+    //creates the grid
     const $ul = $("<ul>")
     for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
       for (let coldIdx = 0; coldIdx < 40; coldIdx++) {
         let $li = $("<li>");
-        let node = new TileNode({ pos: [rowIdx, coldIdx] })
+        // let node = new TileNode({ pos: [rowIdx, coldIdx] })
         $li.attr("pos", [rowIdx, coldIdx]);
-        $li.data("node", node);
+        $li.data("node", [rowIdx, coldIdx]);
         $ul.append($li);
         // console.log($li.data())
       }
