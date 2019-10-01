@@ -1,0 +1,47 @@
+html, body, figure, figcaption, ul, li, h1 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  text-align: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 60px;
+  margin: 30px;
+}
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 30px auto;
+  width: 100%;
+  border: .5px solid gray;
+}
+
+li {
+  z-index: 1;
+  width: 35px;
+  height: 35px;
+  border: .5px solid gray;
+  background:lightsteelblue;
+  cursor: pointer;
+}
+
+li:hover {
+  z-index: 2;
+  background-color: aquamarine;
+  border: 3px solid aquamarine;
+
+
+}
