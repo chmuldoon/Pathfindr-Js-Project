@@ -1,7 +1,7 @@
 import TileNode from "./tile_node";
 
 
-class DrijkstraPF{
+class SimplePathFinder{
   constructor(startPos){
     this.start_pos = startPos;
     this.considered_positions = [startPos];
@@ -24,6 +24,16 @@ class DrijkstraPF{
     };
     return validMoves;
   }
+  findPath(endPos){
+    endNode = this.rootNode.depthFirstSearch(endPos)
+
+    let path = this.traceback(endNode).reverse()
+    let truePath = [];
+    for (let i = 0; i < path.length; i++) {
+      truePath.push(path[i].pos);
+    }
+    return truePath;
+  }
 
   buildMoveTree(){
    
@@ -31,13 +41,28 @@ class DrijkstraPF{
     while (nodes.length > 0){
       let currNode = nodes.shift();
       let currPos = currNode.pos;
+      this.newMovePos(currPos).forEach(nxtPos => {
+        nxtNode = new TileNode(nxtPos);
+        currNode.children.push(nxtNode);
+        nodes.push(nxtNode);
+      });
 
     }
   }
   newMovePos(pos) {
-    this.valid_moves(pos).filter(moves => {
-      !this.considered_positions.includes(moves)
-    })
+    this.valid_moves(pos)
+      .filter(moves => {!this.considered_positions.includes(moves)})
+      .forEach(newPositions => { this.considered_positions.push(newPositions)});
+  }
+  traceback(endNode){
+    let nodes = [];
+    let currentNode = endNode;
+    
+    while (currentNode !== null){
+      nodes.push(currentNode);
+      currentNode = currentNode.parent
+    }
+    return nodes;
   }
 
 }
@@ -52,4 +77,4 @@ const MOVES = [
   [1, 1]
 ];
 
-export default DrijkstraPF;
+export default SimplePathFinder;

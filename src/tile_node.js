@@ -7,7 +7,7 @@ class TileNode{
     this.children = options.children || [];
   }
   
-
+ 
 
 }
 

@@ -53,13 +53,21 @@ li:hover {
   border: .5px solid aquamarine;
 
 
-}
+}x
 
 .wall {
   background-color: gray;
 }
+.path {
+  background-color: yellow;
+  border: .5px solid yellow;
+}
 
 .frog {
+  background-color: green;
+  border: .5px solid green;
+}
+.frog:hover {
   background-color: green;
   border: .5px solid green;
 }
@@ -67,4 +75,7 @@ li:hover {
 .finish {
   background-image: url(../assets/photos/finish.jpg);
   background-size: 200%
+}
+.wall {
+  background-color: gray;
 }
