@@ -70,7 +70,7 @@ class MainAppView {
     $(document).keydown(function(e){
       if(e.keyCode == '32'){
         
-        that.dijkstra([9,10]);
+        that.dijkstra();
       }
     })
     
@@ -102,10 +102,14 @@ class MainAppView {
 
   }
   //testing
-  dijkstra(pos){
-    let dijkstra = new Dijkstra({ startPos: pos, endPos: [9, 30], height: this.height, width: this.width, $el: this.$el})
-
-    return dijkstra.checkNeighbors(pos);
+  dijkstra(){
+    // $(".frog")
+    // debugger
+    let start = $(".frog").data().pos
+    let end = $(".finish").data().pos
+    let dijkstra = new Dijkstra({ startPos: start, endPos: end, height: this.height, width: this.width, $el: this.$el})
+    // debugger
+    return dijkstra.search(start, end);
   }
 
   //end of testing

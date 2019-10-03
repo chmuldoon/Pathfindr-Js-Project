@@ -28,10 +28,9 @@ class Dijkstra{
     this.height = options.height;
     this.width = options.width;
     this.$el = options.$el;
+    this.hit = options.hit || false;
   }
-  search(){
 
-  }
   // Mark all nodes unvisited.Create a set of all the unvisited nodes called the unvisited set.
   unvisited(){
     let unvisited = []
@@ -68,7 +67,7 @@ class Dijkstra{
       let position = positions[i];
       let x = position[0];
       let y = position[1];
-      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.startPos, position)}`);
+      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.endPos, position)}`);
     }
     // For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current
     // node.Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.For example, 
@@ -76,32 +75,51 @@ class Dijkstra{
     // distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8.
     // Otherwise, the current value will be kept.
   }
-  checkNeighbors(pos){
-    let adjacents = this.neighbors(pos);
-    let hit = false
-    adjacents.forEach(neighbor => {
-      // debugger
-      if (neighbor[0] === this.endPos[0] && neighbor[1] === this.endPos[1]){
-        console.log("HIT");
-        hit = true
-        return true;
-      }
-    });
-    // debugger
-    if (!hit){
-      adjacents.forEach(neighbor => {
-        this.checkNeighbors(neighbor);
-      });
-    }
+  // checkNeighbors(pos){
+  //   let adjacents = this.neighbors(pos);
+  //   adjacents.forEach(neighbor => {
+  //     // debugger 
+  //     if (neighbor[0] === this.endPos[0] && neighbor[1] === this.endPos[1]){
+  //       console.log("HIT");
+  //       this.hit = true
+  //       return true;
+  //     }
+  //   });
+  //   // debugger
+  //   if (!this.hit){
+  //     adjacents.forEach(neighbor => {
+  //       this.checkNeighbors(neighbor);
+  //     });
+  //   }
 
+  // }
+  searchCheck(pos, target){
+    pos[0] === target[0] && pos[1] === target[1];
   }
+  search(pos, target) {
+    let queue = [pos]
+    while (queue.length){
+      let currPos = queue.shift();
+      if (this.searchCheck(currPos, target)) {
+        console.log("HIT")
+        return pos;
+      }
+      let positions = this.neighbors(currPos);
+      queue = queue.concat(positions);
+    }
+    null
+  }
+  validMoves(pos){
+     return (pos[0] >= 0 && pos[0] < this.width && pos[1] >= 0 && pos[1] < this.height)
+  }
+
   neighbors(pos){
     let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];
     let neighbors = []
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i]
       const neighbor = [pos[0] + move[0], pos[1] + move[1]];
-      if (!$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("wall") && !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited")){
+      if (!$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("wall") && !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") && this.validMoves(neighbor)){
         // debugger
         neighbors.push(neighbor)
         //testing
