@@ -11,9 +11,8 @@ class MainAppView {
     //testing 
     //add frogs finish and dijkstra when you can
     this.makeGrid();
-    this.addFrog([0, 0]);
+    this.addFrog([9, 10]);
     this.addFinish([9, 30]);
-    this.dijkstra();
     this.bindEvents();
 
 
@@ -24,6 +23,8 @@ class MainAppView {
     this.$el.on("click", "li", event => {
       console.log($(event.currentTarget).data().pos)
       console.log($(event.currentTarget).data())
+      console.log((event.currentTarget))
+
     })
     //changes heldown boolean, useful for creating walls
     this.$el.on("mousedown", "li", event => {
@@ -44,6 +45,7 @@ class MainAppView {
     //but thats hard as of now
     //NOTES: PLACEMENT WORKS HOWEVER still need to limit amount for now,
     // 
+
     this.$el.on("dblclick", "li", event => {
       if (event.shiftKey){
         if ($(event.currentTarget).data().class === "finish") {
@@ -56,7 +58,6 @@ class MainAppView {
       } else{
         if ($(event.currentTarget).data().class === "frog") {
           $(event.currentTarget).removeClass("frog")
-          debugger
           $(event.currentTarget).data("class", "blank");
         } else {
           let pos = $(event.currentTarget).data().pos
@@ -64,15 +65,23 @@ class MainAppView {
         }
       }
     })
-    //ask TAs about this
-    this.$el.keydown(function(e){
-      debugger
+    const that = this;
+    // this.dijkstra([9, 10])
+    $(document).keydown(function(e){
       if(e.keyCode == '32'){
-        console.log("keydown")
+        
+        that.dijkstra([9,10]);
       }
     })
     
     console.log(event.currentTarget.className)
+  }
+  addPath(pos){
+    let x = pos[0];
+    let y = pos[1];
+    // $("li[pos='9,19']").data().node.value = "frog";
+    $(`li[pos='${x},${y}']`).addClass("path")
+    $(`li[pos='${x},${y}']`).data("class", "path");
   }
 
   addFrog(pos) {
@@ -93,10 +102,10 @@ class MainAppView {
 
   }
   //testing
-  dijkstra(){
-    let dijkstra = new Dijkstra({ startPos: [0, 0], endPos: [9, 30], height: this.height, width: this.width})
+  dijkstra(pos){
+    let dijkstra = new Dijkstra({ startPos: pos, endPos: [9, 30], height: this.height, width: this.width, $el: this.$el})
 
-    return dijkstra.unvisted();
+    return dijkstra.checkNeighbors(pos);
   }
 
   //end of testing
