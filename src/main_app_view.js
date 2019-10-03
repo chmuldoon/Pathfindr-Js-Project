@@ -1,3 +1,4 @@
+import Dijkstra from "./dijkstra";
 
 class MainAppView {
   constructor(appLogic, $el) {
@@ -5,8 +6,17 @@ class MainAppView {
     this.$el = $el;
     this.helDown = false;
     this.over = false;
+    this.height = 20;
+    this.width = 40;
+    //testing 
+    //add frogs finish and dijkstra when you can
     this.makeGrid();
+    this.addFrog([0, 0]);
+    this.addFinish([9, 30]);
+    this.dijkstra();
     this.bindEvents();
+
+
   }
   bindEvents() {
     // install a handler on the `li` elements inside the board.
@@ -54,6 +64,7 @@ class MainAppView {
         }
       }
     })
+    //ask TAs about this
     this.$el.keydown(function(e){
       debugger
       if(e.keyCode == '32'){
@@ -81,9 +92,14 @@ class MainAppView {
     $(`li[pos='${x},${y}']`).data("class", "finish");
 
   }
+  //testing
+  dijkstra(){
+    let dijkstra = new Dijkstra({ startPos: [0, 0], endPos: [9, 30], height: this.height, width: this.width})
 
+    return dijkstra.unvisted();
+  }
 
-
+  //end of testing
   toggleWall(eventTarget){
     if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("special")) {
       $(eventTarget).addClass("wall");
@@ -125,8 +141,8 @@ class MainAppView {
   makeGrid() {
     //creates the grid
     const $ul = $("<ul>")
-    for (let rowIdx = 0; rowIdx < 20; rowIdx++) {
-      for (let coldIdx = 0; coldIdx < 40; coldIdx++) {
+    for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
+      for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
         let $li = $("<li>");
         // let node = new TileNode({ pos: [rowIdx, coldIdx] })
         $li.attr("pos", [rowIdx, coldIdx]);
