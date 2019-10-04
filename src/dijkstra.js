@@ -27,26 +27,148 @@ class Dijkstra{
     this.endPos = options.endPos;
     this.height = options.height;
     this.width = options.width;
+    this.$el = options.$el;
+    this.hit = options.hit || false;
   }
-  search(){
 
-  }
   // Mark all nodes unvisited.Create a set of all the unvisited nodes called the unvisited set.
-  unvisted(){
+  unvisited(){
     let unvisited = []
     for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
       for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
         let position = [rowIdx, coldIdx];
         if (position[0] === this.startPos[0] && position[1] === this.startPos[1]){
           let nothing = "happen"
-        }else{
+        } else if (!$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visted")){
           unvisited.push(position);
         }
       }
     }
     return unvisited;
   }
-  ///
+  deltaNum(num1, num2) {
+    if (num1 > num2){
+      return num1 - num2
+    }else{
+      return num2 - num1
+    }
+  }
+  deltaPos(pos1, pos2){
+    let x = this.deltaNum(pos1[0], pos2[0]);
+    let y = this.deltaNum(pos1[1], pos2[1]);
+    return (x + y);
+  }
+  // Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes.
+  //  Set the initial node as current.
+  assignDistance(){
+    let positions = []
+    for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
+      for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
+       
+        if ($(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visited")){
+          positions.push([rowIdx, coldIdx]);
+        }
+
+      }
+    }
+
+    //go through every "node" in unvisted, assign a distance value, value will added via .data("distance", "${}") also add to the center so it can be visible
+    for (let i = 0; i < positions.length; i++) {
+      let position = positions[i];
+      let x = position[0];
+      let y = position[1];
+      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.endPos, position)}`);
+    }
+    // For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current
+    // node.Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.For example, 
+    // if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the
+    // distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8.
+    // Otherwise, the current value will be kept.
+  }
+  // checkNeighbors(pos){
+  //   let adjacents = this.neighbors(pos);
+  //   adjacents.forEach(neighbor => {
+  //     // debugger 
+  //     if (neighbor[0] === this.endPos[0] && neighbor[1] === this.endPos[1]){
+  //       console.log("HIT");
+  //       this.hit = true
+  //       return true;
+  //     }
+  //   });
+  //   // debugger
+  //   if (!this.hit){
+  //     adjacents.forEach(neighbor => {
+  //       this.checkNeighbors(neighbor);
+  //     });
+  //   }
+
+  // }
+  makePath(pos, target){
+    let positions = []
+    for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
+      for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
+        if ($(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visited")) {
+          positions.push([rowIdx, coldIdx]);
+        }
+      }
+    }
+    if(this.searchCheck){return pos};
+
+
+  }
+  searchCheck(pos, target){
+    return (pos[0] === target[0] && pos[1] === target[1]);
+  }
+  search(pos, target) {
+    let queue = [pos]
+    while (!this.hit){
+      let currPos = queue.shift();
+      if (this.searchCheck(currPos, target)) {
+        this.hit = true;
+        console.log("HIT")
+      }else{
+        // this.wait(500);
+        let positions = this.neighbors(currPos);
+        queue = queue.concat(positions);
+      }
+    }
+    this.assignDistance();
+    
+  }
+  validMoves(pos){
+
+    return (pos[0] >= 0 && pos[0] < this.height && pos[1] >= 0 && pos[1] < this.width)
+  }
+  wait(ms) {
+    let start = new Date().getTime();
+    let end = start;
+    while (end < start + ms) {
+      end = new Date().getTime();
+    }
+  }
+
+  neighbors(pos){
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+    let neighbors = []
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i]
+      const neighbor = [pos[0] + move[0], pos[1] + move[1]];
+      if (!$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("wall") && !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") && !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog")&& this.validMoves(neighbor)){
+        // debugger
+        neighbors.push(neighbor)
+        //testing
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("class", "visted")
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).addClass("visited")
+        //testing over
+      }
+    }
+    // debugger
+    return neighbors;
+  }
+  foo(){
+    return true
+  }
+
 }
 
 export default Dijkstra;

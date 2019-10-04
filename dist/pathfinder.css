@@ -63,14 +63,7 @@ li:hover {
   border: .5px solid yellow;
 }
 
-.frog {
-  background-color: green;
-  border: .5px solid green;
-}
-.frog:hover {
-  background-color: green;
-  border: .5px solid green;
-}
+
 
 .finish {
   background-image: url(../assets/photos/finish.jpg);
@@ -78,4 +71,16 @@ li:hover {
 }
 .wall {
   background-color: gray;
+}
+.visited{
+  background-color: orange;
+  border: .5px solid gray;
+}
+.frog {
+  background-color: green;
+  border: .5px solid green;
+}
+.frog:hover {
+  background-color: green;
+  border: .5px solid green;
 }
