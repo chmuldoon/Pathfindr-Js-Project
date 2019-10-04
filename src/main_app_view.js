@@ -107,7 +107,7 @@ class MainAppView {
     // debugger
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let dijkstra = new Dijkstra({ startPos: start, endPos: end, height: this.height, width: this.width, $el: this.$el})
+    let dijkstra = new Dijkstra({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el})
     // debugger
     return dijkstra.search(start, end);
   }

@@ -73,8 +73,8 @@ li:hover {
   background-color: gray;
 }
 .visited{
-    background-color: orange;
-  border: .5px solid orange;
+  background-color: orange;
+  border: .5px solid gray;
 }
 .frog {
   background-color: green;
