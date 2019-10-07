@@ -91,7 +91,7 @@ class MainAppView {
     }
     // $("li[pos='9,19']").data().node.value = "frog";
     $(`li[pos='${x},${y}']`).addClass("frog").addClass("special")
-    $(`li[pos='${x},${y}']`).data("class", "frog");
+    $(`li[pos='${x},${y}']`).data("class", "frog").data("dist", 1);
   }
   addFinish(pos) {
     let x = pos[0];
@@ -166,6 +166,10 @@ class MainAppView {
       }
     }
     this.$el.append($ul);
+  }
+  addClear() {
+    const $button = $("<button>")
+    this.$el.append($button);
   }
 
 }

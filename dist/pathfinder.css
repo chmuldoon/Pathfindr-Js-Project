@@ -17,7 +17,7 @@ body {
   margin-left: auto;
   margin-right: auto;
   height: 620px;
-  width: 1240px;
+  width: 1215px;
 }
 
 h1 {
@@ -34,7 +34,7 @@ ul {
   padding: 0px;
   height: 100%;
   width: 100%;
-  border: .5px solid gray;
+  border: .2px solid #454545;
 
 }
 
@@ -42,27 +42,23 @@ li {
   z-index: 1;
   width: 30px;
   height: 30px;
-  border: .5px solid gray;
+  border: .2px solid #454545;
   background:lightsteelblue;
   cursor: pointer;
 }
 
 li:hover {
   z-index: 2;
-  background-color: aquamarine;
-  border: .5px solid aquamarine;
+  background-color: #8BF28B;
+  border: .2px solid #454545;
+  opacity: 50%;
 
 
-}x
+}
 
 .wall {
   background-color: gray;
 }
-.path {
-  background-color: yellow;
-  border: .5px solid yellow;
-}
-
 
 
 .finish {
@@ -71,16 +67,39 @@ li:hover {
 }
 .wall {
   background-color: gray;
+  border: .2px solid #454545;
 }
 .visited{
-  background-color: orange;
-  border: .5px solid gray;
+  background-color: #FE8B32;
+  border: .2px solid #454545;
+}
+.visited p{
+  margin-top: 6px;
+  color: #FE8B32;
+  margin-bottom: auto;
+  opacity: 30%;
+}
+.visited:hover p{
+  margin-top: 6px;
+  color: #F7B647;
+  margin-bottom: auto;
+  opacity: 30%;
+}
+/* .visited p:hover{
+
+  color: #454545;
+
+} */
+
+.path {
+  background-color: yellow;
+  border: .2px solid #454545;
 }
 .frog {
   background-color: green;
-  border: .5px solid green;
+  border: .2px solid #454545;
 }
 .frog:hover {
   background-color: green;
-  border: .5px solid green;
+  border: .2px solid green;
 }
