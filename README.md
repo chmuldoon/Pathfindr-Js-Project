@@ -1,5 +1,5 @@
 # Pathfindr: A Javascript and Jquery Project
-[Live Demo](https://chmuldoon.github.io/Pathfindr-Javascript-Project/dist)
+[Live Demo](https://chmuldoon.github.io/Pathfindr-Js-Project/dist/)
 
 ## Summary 
   Pathfindr is an interactive visualization of pathfinding algorithms. It was created over the course of a week with
