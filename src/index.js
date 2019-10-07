@@ -4,7 +4,7 @@ import MainAppView from "./main_app_view";
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("working")
+  // console.log("working")
   // const canvasEl = document.getElementsByTagName("canvas")[0];
   // canvasEl.width = MainAppLogic.DIM_X;
   // canvasEl.height = MainAppLogic.DIM_Y;
