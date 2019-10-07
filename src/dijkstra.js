@@ -21,6 +21,9 @@ import TileNode from "./tile_node";
 // 6
 // Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new "current node",
 //   and go back to step 3.
+
+
+/// NEW NOTE THIS ISNT ENTIRELY DIJKSTRA, so possible name change in the works 
 class Dijkstra{
   constructor(options){
     this.startPos = options.startPos;
@@ -77,7 +80,11 @@ class Dijkstra{
       let position = positions[i];
       let x = position[0];
       let y = position[1];
-      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.endPos, position)}`);
+      // let $p = $(`<p>${this.deltaPos(this.endPos, position)}</p>`)
+      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.startPos, position)}`);
+      // debugger
+      $(`li[pos='${x},${y}']`).append('<p>' + this.deltaPos(this.startPos, position) + '</p>');
+
     }
     // For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current
     // node.Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.For example, 
@@ -103,17 +110,28 @@ class Dijkstra{
   //   }
 
   // }
-  makePath(pos, target){
-    let positions = []
-    for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
-      for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
-        if ($(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visited")) {
-          positions.push([rowIdx, coldIdx]);
-        }
-      }
+  makePath(){
+    let positions = [this.endPos]
+    // debugger
+    while(!positions.includes(this.startPos)){
+      positions.unshift(this.whoIsMyParentCoord(positions[0]))
     }
-    if(this.searchCheck){return pos};
+    positions.forEach(pos => {
+      $(`li[pos='${pos[0]},${pos[1]}']`).addClass("path")
+    })
 
+    
+  }
+  whoIsMyParent(pos){
+    parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
+    return $(`li[pos='${parent[0]},${parent[1]}']`)
+  }
+  whoIsMyParentCoord(pos) {
+    return $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
+  }
+
+
+  children(pos){
 
   }
   searchCheck(pos, target){
@@ -121,6 +139,7 @@ class Dijkstra{
   }
   search(pos, target) {
     let queue = [pos]
+
     while (!this.hit){
       let currPos = queue.shift();
       if (this.searchCheck(currPos, target)) {
@@ -129,10 +148,19 @@ class Dijkstra{
       }else{
         // this.wait(500);
         let positions = this.neighbors(currPos);
+        //this next line assigns each li a neighbors set, of the neighbor(s) they discover
+        $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
+        // $(`li[pos='${currPos[0]},${currPos[1]}']`).data("dist", dist);
+        // debugger
+
+
         queue = queue.concat(positions);
+     
       }
     }
-    this.assignDistance();
+    // this.assignDistance();
+    // debugger
+    this.makePath()
     
   }
   validMoves(pos){
@@ -147,8 +175,10 @@ class Dijkstra{
     }
   }
 
+
   neighbors(pos){
-    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+    // let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];//non diag
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0],[1,1], [-1,-1],[1,-1], [-1,1]] //diag but iffy
     let neighbors = []
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i]
@@ -159,6 +189,15 @@ class Dijkstra{
         //testing
         $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("class", "visted")
         $(`li[pos='${neighbor[0]},${neighbor[1]}']`).addClass("visited")
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("parent", pos).data("dist", (this.whoIsMyParent(neighbor).data().dist + 1))
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).append('<p>' + $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data().dist + '</p>')
+
+
+        // debugger
+
+        // if ($(`li[pos='${neighbor[0]},${neighbor[1]}']`).data().parent === this.startPos){
+        //   $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("dist", 1)
+        // }
         //testing over
       }
     }
