@@ -85,10 +85,10 @@ class MainAppView {
     $(".diag").click(function (e) {
       if(that.diag === false){
         that.diag = true
-        $(".diag").empty().append("Diagnol On");
+        $(".diag").empty().append("Diagonal On");
       }else{
         that.diag = false
-        $(".diag").empty().append("Diagnol Off");
+        $(".diag").empty().append("Diagonal Off");
       }
       console.log(that.diag);
     })
