@@ -32,6 +32,7 @@ class Dijkstra{
     this.width = options.width;
     this.$el = options.$el;
     this.hit = options.hit || false;
+    this.diag = options.diag;
   }
 
   // Mark all nodes unvisited.Create a set of all the unvisited nodes called the unvisited set.
@@ -42,7 +43,7 @@ class Dijkstra{
         let position = [rowIdx, coldIdx];
         if (position[0] === this.startPos[0] && position[1] === this.startPos[1]){
           let nothing = "happen"
-        } else if (!$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visted")){
+        } else if (!$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visited")){
           unvisited.push(position);
         }
       }
@@ -63,35 +64,7 @@ class Dijkstra{
   }
   // Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes.
   //  Set the initial node as current.
-  assignDistance(){
-    let positions = []
-    for (let rowIdx = 0; rowIdx < this.height; rowIdx++) {
-      for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
-       
-        if ($(`li[pos='${rowIdx},${coldIdx}']`).hasClass("visited")){
-          positions.push([rowIdx, coldIdx]);
-        }
 
-      }
-    }
-
-    //go through every "node" in unvisted, assign a distance value, value will added via .data("distance", "${}") also add to the center so it can be visible
-    for (let i = 0; i < positions.length; i++) {
-      let position = positions[i];
-      let x = position[0];
-      let y = position[1];
-      // let $p = $(`<p>${this.deltaPos(this.endPos, position)}</p>`)
-      $(`li[pos='${x},${y}']`).data("distance", `${this.deltaPos(this.startPos, position)}`);
-      // debugger
-      $(`li[pos='${x},${y}']`).append('<p>' + this.deltaPos(this.startPos, position) + '</p>');
-
-    }
-    // For the current node, consider all of its unvisited neighbours and calculate their tentative distances through the current
-    // node.Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.For example, 
-    // if the current node A is marked with a distance of 6, and the edge connecting it with a neighbour B has length 2, then the
-    // distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8.
-    // Otherwise, the current value will be kept.
-  }
   // checkNeighbors(pos){
   //   let adjacents = this.neighbors(pos);
   //   adjacents.forEach(neighbor => {
@@ -117,10 +90,10 @@ class Dijkstra{
       positions.unshift(this.whoIsMyParentCoord(positions[0]))
     }
     positions.forEach(pos => {
-      $(`li[pos='${pos[0]},${pos[1]}']`).addClass("path")
+      $(`li[pos='${pos[0]},${pos[1]}']`)
+        .addClass("path")
+        .append('<p class="message">' + $(`li[pos='${pos[0]},${pos[1]}']`).data().dist + '</p>')
     })
-
-    
   }
   whoIsMyParent(pos){
     parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
@@ -130,10 +103,6 @@ class Dijkstra{
     return $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
   }
 
-
-  children(pos){
-
-  }
   searchCheck(pos, target){
     return (pos[0] === target[0] && pos[1] === target[1]);
   }
@@ -144,10 +113,10 @@ class Dijkstra{
       let currPos = queue.shift();
       if (this.searchCheck(currPos, target)) {
         this.hit = true;
-        console.log("HIT")
+        // console.log("HIT")
       }else{
-        // this.wait(500);
-        let positions = this.neighbors(currPos);
+        setTimeout(this.filler(), 500)
+        let positions = this.neighbors(currPos)
         //this next line assigns each li a neighbors set, of the neighbor(s) they discover
         $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
         // $(`li[pos='${currPos[0]},${currPos[1]}']`).data("dist", dist);
@@ -163,6 +132,9 @@ class Dijkstra{
     this.makePath()
     
   }
+  filler(){
+    return;
+  }
   validMoves(pos){
 
     return (pos[0] >= 0 && pos[0] < this.height && pos[1] >= 0 && pos[1] < this.width)
@@ -177,9 +149,14 @@ class Dijkstra{
 
 
   neighbors(pos){
-    // let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];//non diag
-    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0],[1,1], [-1,-1],[1,-1], [-1,1]] //diag but iffy
+    let moves;
+    if (this.diag === true){
+      moves = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]] //diag but iffy
+    }else{
+      moves = [[0, 1], [0, -1], [1, 0], [-1, 0]];//non diag
+    }
     let neighbors = []
+    
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i]
       const neighbor = [pos[0] + move[0], pos[1] + move[1]];
@@ -187,10 +164,11 @@ class Dijkstra{
         // debugger
         neighbors.push(neighbor)
         //testing
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("class", "visted")
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).addClass("visited")
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data("parent", pos).data("dist", (this.whoIsMyParent(neighbor).data().dist + 1))
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`).append('<p>' + $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data().dist + '</p>')
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
+          .data("class", "visited")
+          .addClass("visited")
+          .data("parent", pos).data("dist", (this.whoIsMyParent(neighbor).data().dist + 1))
+          // .append('<p class="message">' + $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data().dist + '</p>')
 
 
         // debugger

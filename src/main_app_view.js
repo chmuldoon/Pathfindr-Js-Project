@@ -8,6 +8,7 @@ class MainAppView {
     this.over = false;
     this.height = 20;
     this.width = 40;
+    this.diag = false;
     //testing 
     //add frogs finish and dijkstra when you can
     this.makeGrid();
@@ -21,7 +22,7 @@ class MainAppView {
     // install a handler on the `li` elements inside the board.
     //tests click and logs position and info 
     this.$el.on("click", "li", event => {
-      console.log($(event.currentTarget).data().pos)
+      // console.log($(event.currentTarget).data().pos)
       console.log($(event.currentTarget).data())
       console.log((event.currentTarget))
 
@@ -67,14 +68,38 @@ class MainAppView {
     })
     const that = this;
     // this.dijkstra([9, 10])
-    $(document).keydown(function(e){
-      if(e.keyCode == '32'){
-        
-        that.dijkstra();
+    $(".clear").click(function(e){
+      // debugger
+      for (let rowIdx = 0; rowIdx < that.height; rowIdx++) {
+        for (let coldIdx = 0; coldIdx < that.width; coldIdx++) {
+          $(`li[pos='${rowIdx},${coldIdx}']`)
+          .removeClass("visited wall path frog finish")
+          .addClass("blank")
+          .removeData("dist children parent class")
+          .empty()
+          that.addFrog([9, 10]);
+          that.addFinish([9, 30]);
+        }
       }
     })
+    $(".diag").click(function (e) {
+      if(that.diag === false){
+        that.diag = true
+        $(".diag").empty().append("Diagnol On");
+      }else{
+        that.diag = false
+        $(".diag").empty().append("Diagnol Off");
+      }
+      console.log(that.diag);
+    })
+
+    $(".makePath").click(function(e){
+      that.dijkstra();
+    })
+
+
     
-    console.log(event.currentTarget.className)
+    // console.log(event.currentTarget.className)
   }
   addPath(pos){
     let x = pos[0];
@@ -91,7 +116,7 @@ class MainAppView {
     }
     // $("li[pos='9,19']").data().node.value = "frog";
     $(`li[pos='${x},${y}']`).addClass("frog").addClass("special")
-    $(`li[pos='${x},${y}']`).data("class", "frog").data("dist", 1);
+    $(`li[pos='${x},${y}']`).data("class", "frog").data("dist", 0);
   }
   addFinish(pos) {
     let x = pos[0];
@@ -107,7 +132,7 @@ class MainAppView {
     // debugger
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let dijkstra = new Dijkstra({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el})
+    let dijkstra = new Dijkstra({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
     return dijkstra.search(start, end);
   }
