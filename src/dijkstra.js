@@ -121,7 +121,7 @@ class Dijkstra{
         let positions = this.neighbors(currPos)
         // debugger
         //this next line assigns each li a neighbors set, of the neighbor(s) they discover
-        await this.sleep(25).then(() => {
+        await this.sleep(15).then(() => {
           $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
         });
         // $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
