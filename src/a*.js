@@ -4,4 +4,8 @@ class AStar extends Dijkstra{
   constructor(options){
     
   }
+
+  heueristic(){
+    
+  }
 }
