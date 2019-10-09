@@ -29,7 +29,6 @@ h3 {
   margin: 0px;
 }
 
-
 ul {
   list-style: none;
   display: flex;
@@ -38,7 +37,7 @@ ul {
   padding: 0px;
   height: 100%;
   width: 100%;
-  border: .2px solid #454545;
+  border: .2px solid #4cc7f8;
 
 }
 .options {
@@ -54,16 +53,15 @@ li {
   z-index: 1;
   width: 30px;
   height: 30px;
-  border: .2px solid #454545;
-  background:lightsteelblue;
+  border: .2px solid #4cc7f8;;
+  background:black;
   cursor: pointer;
 }
 
 li:hover {
   z-index: 2;
-  background-color: #8BF28B;
-  border: .2px solid #454545;
-  opacity: 50%;
+  background-color: #4cc7f8;
+  border: .2px solid white;;
 
 
 }
@@ -75,16 +73,17 @@ li:hover {
 
 
 .wall {
-  background-color: gray;
-  border: .2px solid #454545;
+
+  background-color: #302f2f;
+  border: .2px solid #4cc7f8;;
 }
 .visited{
-  background-color: #FE8B32;
-  border: .2px solid #454545;
+  background-color: white;
+  border: .2px solid #8BF28B;;
 }
 .visited p{
   margin-top: 6px;
-  color: #FE8B32;
+  color:#8BF28B;
   margin-bottom: auto;
   opacity: 30%;
 }
@@ -95,7 +94,7 @@ li:hover {
   opacity: 30%;
 }
 .frog p{
-  color: green;
+  color: #8BF28B;
 }
 /* .visited p:hover{
 
@@ -104,18 +103,19 @@ li:hover {
 } */
 
 .path {
-  background-color: yellow;
-  border: .2px solid #454545;
+  background-color: #ffc3eb;
+  border: .2px solid #ffc3eb;
 }
 .frog {
-  background-color: green;
-  border: .2px solid #454545;
+  background-color: #8BF28B;
+  border: .2px solid white;
 }
 .frog:hover {
-  background-color: green;
-  border: .2px solid green;
+  background-color: #8BF28B;
+  border: .2px solid #8BF28B;
 }
 .finish {
-  background-image: url(../assets/photos/finish.jpg);
+  /* background-image: url(../assets/photos/finish.jpg); */
+  background-color: rgb(243, 114, 114);
   background-size: 200%
 }
