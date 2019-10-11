@@ -9,3 +9,5 @@ class AStar extends Dijkstra{
     
   }
 }
+
+export default AStar;
