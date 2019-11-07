@@ -74,7 +74,7 @@ li:hover {
 
 .wall {
 
-  background-color: #302f2f;
+  background-color: gray;
   border: .2px solid #4cc7f8;;
 }
 .visited{
@@ -87,20 +87,9 @@ li:hover {
   margin-bottom: auto;
   opacity: 30%;
 }
-.visited:hover p{
-  margin-top: 6px;
-  color: #F7B647;
-  margin-bottom: auto;
-  opacity: 30%;
-}
 .frog p{
   color: #8BF28B;
 }
-/* .visited p:hover{
-
-  color: #454545;
-
-} */
 
 .path {
   background-color: #ffc3eb;

@@ -35,19 +35,6 @@ class Dijkstra{
     this.diag = options.diag;
   }
 
-  deltaNum(num1, num2) {
-    if (num1 > num2){
-      return num1 - num2
-    }else{
-      return num2 - num1
-    }
-  }
-  deltaPos(pos1, pos2){
-    let x = this.deltaNum(pos1[0], pos2[0]);
-    let y = this.deltaNum(pos1[1], pos2[1]);
-    return (x + y);
-  }
-
   async makePath(){
     let positions = [this.endPos]
     // debugger
@@ -73,6 +60,7 @@ class Dijkstra{
   searchCheck(pos, target){
     return (pos[0] === target[0] && pos[1] === target[1]);
   }
+
   async search(pos, target) {
     let queue = [pos]
 
@@ -91,9 +79,7 @@ class Dijkstra{
     }
     this.makePath()
   }
-  filler(){
-    return;
-  }
+  
   validMoves(pos){
     return (pos[0] >= 0 && pos[0] < this.height && pos[1] >= 0 && pos[1] < this.width)
   }
@@ -102,16 +88,16 @@ class Dijkstra{
   }
   neighbors(pos){
     let moves;
-    if (this.diag === true){
+    (this.diag === true) ?
       moves = [[0, 1], 
       [0, -1], [1, 0], 
       [-1, 0], [1, 1], 
       [-1, -1], [1, -1], 
       [-1, 1]] //diag but iffy, need to fix edge cases that allow wall hopping 
-    }else{
+    :
       moves = [[0, 1], [0, -1], 
-      [1, 0], [-1, 0]];//non diag
-    }
+      [1, 0], [-1, 0]];//non diag;
+    
     let neighbors = []
     
     for (let i = 0; i < moves.length; i++) {
