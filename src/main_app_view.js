@@ -1,4 +1,6 @@
 import Dijkstra from "./dijkstra";
+import AStar from "./a*";
+
 
 class MainAppView {
   constructor(appLogic, $el) {
@@ -50,16 +52,14 @@ class MainAppView {
     this.$el.on("dblclick", "li", event => {
       if (event.shiftKey){
         if ($(event.currentTarget).data().class === "finish") {
-          $(event.currentTarget).removeClass("finish")
-          $(event.currentTarget).data("class", "blank");
+          $(event.currentTarget).removeClass("finish").data("class", "blank");
         } else {
           let pos = $(event.currentTarget).data().pos
           this.addFinish(pos);
         }
       } else{
         if ($(event.currentTarget).data().class === "frog") {
-          $(event.currentTarget).removeClass("frog")
-          $(event.currentTarget).data("class", "blank");
+          $(event.currentTarget).removeClass("frog").data("class", "blank");
         } else {
           let pos = $(event.currentTarget).data().pos
           this.addFrog(pos);
@@ -68,6 +68,7 @@ class MainAppView {
     })
     const that = this;
     // this.dijkstra([9, 10])
+
     $(".clear").click(function(e){
       // debugger
       for (let rowIdx = 0; rowIdx < that.height; rowIdx++) {
@@ -102,28 +103,23 @@ class MainAppView {
     // console.log(event.currentTarget.className)
   }
   addPath(pos){
-    let x = pos[0];
-    let y = pos[1];
-    // $("li[pos='9,19']").data().node.value = "frog";
-    $(`li[pos='${x},${y}']`).addClass("path")
-    $(`li[pos='${x},${y}']`).data("class", "path");
+    $(`li[pos='${pos[0]},${pos[1]}']`)
+      .addClass("path")
+      .data("class", "path");
   }
 
   addFrog(pos) {
-    let x = pos[0];
-    let y = pos[1];
-    if (this.over) {
-    }
-    // $("li[pos='9,19']").data().node.value = "frog";
-    $(`li[pos='${x},${y}']`).addClass("frog").addClass("special")
-    $(`li[pos='${x},${y}']`).data("class", "frog").data("dist", 0);
+    $(`li[pos='${pos[0]},${pos[1]}']`)
+      .addClass("frog")
+      .addClass("special")
+      .data("class", "frog")
+      .data("dist", 0);
   }
   addFinish(pos) {
-    let x = pos[0];
-    let y = pos[1];
-    // $("li[pos='9,19']").data().node.value = "frog";
-    $(`li[pos='${x},${y}']`).addClass("finish").addClass("special")
-    $(`li[pos='${x},${y}']`).data("class", "finish");
+    $(`li[pos='${pos[0]},${pos[1]}']`)
+      .addClass("finish")
+      .addClass("special")
+      .data("class", "finish");
 
   }
   //testing
@@ -136,45 +132,35 @@ class MainAppView {
     // debugger
     return dijkstra.search(start, end);
   }
+  aStart(){
+    // $(".frog")
+    // debugger
+    let start = $(".frog").data().pos
+    let end = $(".finish").data().pos
+    let aStar = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
+    // debugger
+    return aStar.search(start, end);
+  }
 
   //end of testing
   toggleWall(eventTarget){
     if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("special")) {
-      $(eventTarget).addClass("wall");
-      $(eventTarget).data("class", "wall");
+      $(eventTarget).addClass("wall")
+        .data("class", "wall");
 
       // $(eventTarget).data().node.value = "obstacle";
     
     } else if (this.helDown && ($(eventTarget).hasClass("wall"))) {
       $(eventTarget).removeClass("wall")
-      $(eventTarget).data("class", "blank");
+        .data("class", "blank");
 
       // $(eventTarget).data().node.value = null;
     }
   }
-  // addFinish() {
-  //   // $("li[pos='9,30']").data().node.value = "finish";
-  //   $("li[pos='9,30']").addClass("finish").addClass("special");
-  //   $("li[pos='9,30']").data("class", "finish");
-
-  // }
-
 
   moveFrog(){
 
   }
-  
-  // addWall(){
-  //   if (!$(eventTarget).hasClass("wall")) {
-  //     $(eventTarget).addClass("wall")
-  //   }
-  // }
-  // removeWall(){
-  //   if ($(eventTarget).hasClass("wall")) {
-  //     $(eventTarget).removeClass("wall")
-  //   }
-  // }
-
 
   makeGrid() {
     //creates the grid
@@ -183,9 +169,9 @@ class MainAppView {
       for (let coldIdx = 0; coldIdx < this.width; coldIdx++) {
         let $li = $("<li>");
         // let node = new TileNode({ pos: [rowIdx, coldIdx] })
-        $li.attr("pos", [rowIdx, coldIdx]);
-        $li.data("pos", [rowIdx, coldIdx]);
-        $li.data("class", "blank")
+        $li.attr("pos", [rowIdx, coldIdx])
+          .data("pos", [rowIdx, coldIdx])
+          .data("class", "blank")
         $ul.append($li);
         // console.log($li.data())
       }
