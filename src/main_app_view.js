@@ -74,9 +74,9 @@ class MainAppView {
       for (let rowIdx = 0; rowIdx < that.height; rowIdx++) {
         for (let coldIdx = 0; coldIdx < that.width; coldIdx++) {
           $(`li[pos='${rowIdx},${coldIdx}']`)
-          .removeClass("visited wall path frog finish")
+          .removeClass("visited wall path frog finish scanned")
           .addClass("blank")
-          .removeData("dist children parent class")
+          .removeData("dist children parent class scanned")
           .empty()
           that.addFrog([9, 10]);
           that.addFinish([9, 30]);
@@ -119,7 +119,9 @@ class MainAppView {
     $(`li[pos='${pos[0]},${pos[1]}']`)
       .addClass("finish")
       .addClass("special")
-      .data("class", "finish");
+      .data("class", "finish")
+      .data("scanDist", 0);
+
 
   }
   //testing
@@ -130,7 +132,9 @@ class MainAppView {
     let end = $(".finish").data().pos
     let dijkstra = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
-    return dijkstra.search(start, end);
+    // return dijkstra.search(end, start);
+    return dijkstra.preScan(start, end);
+
   }
   aStart(){
     // $(".frog")

@@ -70,7 +70,9 @@ li:hover {
   background-color: gray;
 }
 
-
+.scanned {
+  background-color: red;
+}
 
 .wall {
 
