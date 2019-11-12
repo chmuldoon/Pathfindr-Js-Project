@@ -133,7 +133,7 @@ class MainAppView {
     let dijkstra = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
     // return dijkstra.search(end, start);
-    return dijkstra.preScan(start, end);
+    return dijkstra.search(start, end);
 
   }
   aStart(){
