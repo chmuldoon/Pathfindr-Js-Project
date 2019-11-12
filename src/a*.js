@@ -10,25 +10,25 @@ class AStar {
     this.diag = options.diag;
   }
 
-  async makePath() {
-    let positions = [this.endPos];
-    // debugger
-    while (!positions.includes(this.startPos)) {
-      positions.unshift(this.whoIsMyParentCoord(positions[0]));
-    }
-    for (let i = 0; i < positions.length; i++) {
-      const pos = positions[i];
-      await this.sleep(25).then(() => {
-        $(`li[pos='${pos[0]},${pos[1]}']`)
-          .addClass("path")
-          .append(
-            '<p class="message">' +
-              $(`li[pos='${pos[0]},${pos[1]}']`).data().dist +
-              "</p>"
-          );
-      });
-    }
-  }
+  // async makePath() {
+  //   let positions = [this.endPos];
+  //   // debugger
+  //   while (!positions.includes(this.startPos)) {
+  //     positions.unshift(this.whoIsMyParentCoord(positions[0]));
+  //   }
+  //   for (let i = 0; i < positions.length; i++) {
+  //     const pos = positions[i];
+  //     await this.sleep(25).then(() => {
+  //       $(`li[pos='${pos[0]},${pos[1]}']`)
+  //         .addClass("path")
+  //         .append(
+  //           '<p class="message">' +
+  //             $(`li[pos='${pos[0]},${pos[1]}']`).data().dist +
+  //             "</p>"
+  //         );
+  //     });
+  //   }
+  // }
   whoIsMyParent(pos) {
     parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
     return $(`li[pos='${parent[0]},${parent[1]}']`);
@@ -36,10 +36,16 @@ class AStar {
   whoIsMyParentCoord(pos) {
     return $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
   }
+  distFromEnd(pos) {
+    let x = pos[0] < this.endPos[0] ? this.endPos[0] - pos[0] : pos[0] - this.endPos[0]
+    let y = pos[1] < this.endPos[1] ? this.endPos[1] - pos[1] : pos[1] - this.endPos[1]
+    return x + y
+  }
 
   searchCheck(pos, target) {
     return pos[0] === target[0] && pos[1] === target[1];
   }
+  ///recv
   async search(pos, target) {
     let queue = [pos];
 
@@ -49,26 +55,29 @@ class AStar {
         this.hit = true;
       } else {
         let positions = this.neighbors(currPos);
-        await this.sleep(15).then(() => {
-          $(`li[pos='${currPos[0]},${currPos[1]}']`).data(
-            "children",
-            positions
-          );
-        });
+        // await this.sleep(15).then(() => {
+        // });
+            $(`li[pos='${currPos[0]},${currPos[1]}']`)
+              .data("children", positions)
+              .append(
+                '<p class="message">' +
+                  (this.distFromEnd(currPos) - $(`li[pos='${currPos[0]},${currPos[1]}']`).data().dist
+                  ) +
+                  "</p>"
+                // - this.distFromEnd(currPos))
+              );
 
         queue = queue.concat(positions);
       }
     }
-    this.makePath();
+    // this.makePath();
   }
   validMoves(pos) {
     return (
       pos[0] >= 0 && pos[0] < this.height && pos[1] >= 0 && pos[1] < this.width
     );
   }
-  sleep(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-  }
+
   neighbors(pos) {
     let moves;
     this.diag === true
