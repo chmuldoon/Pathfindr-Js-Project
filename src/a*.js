@@ -37,6 +37,7 @@ class AStar {
   whoIsMyParentCoord(pos) {
     return $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
   }
+
   distFromEnd(pos) {
     let x =
       pos[0] < this.endPos[0]
@@ -53,9 +54,28 @@ class AStar {
     //CHANGE FROM POS TO CLASS for DIJKSTRA
     return pos[0] === target[0] && pos[1] === target[1];
   }
+  debugMan(nums, target){
+    let numHash = {}
+  
+    for (let i = 0; i < nums.length; i ++){
+      numHash[nums[i]] = i;
+    
+
+    }
+    let numHashVal = (Object.values(numHash))
+
+    for (let i = 0; i < nums.length; i ++){
+      let diff = target - nums[i] 
+      if (numHash.hasOwnProperty(diff) && numHash[diff] !== i){
+        return [i, numHash[diff]]
+      }
+    }
+  }
 
   preScan(pos, target) {
     let queue = [target];
+    // debugger
+    this.debugMan([3,3], 6)
     //  $(`li[pos='${pos[0]},${pos[1]}']`).data("dist", 0);
     while (!this.hit) {
       let currPos = queue.shift();
@@ -102,26 +122,34 @@ class AStar {
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       const neighbor = [pos[0] + move[0], pos[1] + move[1]];
+      const $li = $(`li[pos='${neighbor[0]},${neighbor[1]}']`);
       if (
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("wall") &&
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("scanned") &&
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("finish") &&
+        !$li.hasClass("wall") &&
+        !$li.hasClass("scanned") &&
+        !$li.hasClass("finish") &&
         this.validMoves(neighbor)
       ) {
         neighbors.push(neighbor);
+        $li
+        .data({parent: pos})
+        .data({scanDist: this.whoIsMyParent(neighbor).data().scanDist + 1})
+        //below is more for 
+        .addClass("scanned")
+        .data("class", "scanned")
+        // .append(`<p>` + $li.data().scanDist + `</p`);
         // debugger
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
-          .data("class", "scanned")
-          .addClass("scanned")
-          .data("parent", pos)
-          .data("scanDist", this.whoIsMyParent(neighbor).data().scanDist + 1);
-        // .append('<p class="message">' + $(`li[pos='${neighbor[0]},${neighbor[1]}']`).data().scanDist + '</p>')
       }
     }
     return neighbors;
   }
   //
+  sleep(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
   async search(pos, target) {
+    this.preScan(pos, target)
+    this.hit = false;
+    // debugger
     let queue = [pos];
 
     while (!this.hit) {
@@ -140,7 +168,7 @@ class AStar {
         queue = queue.concat(positions);
       }
     }
-    this.makePath();
+    // this.makePath();
   }
   neighbors(pos) {
     let moves;
@@ -167,14 +195,17 @@ class AStar {
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       const neighbor = [pos[0] + move[0], pos[1] + move[1]];
+      const $li = $(`li[pos='${neighbor[0]},${neighbor[1]}']`);
+      const $pos = $(`li[pos='${pos[0]},${pos[1]}']`);
       if (
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("wall") &&
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
-        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
-        this.validMoves(neighbor)
+        !$li.hasClass("wall") &&
+        !$li.hasClass("visited") &&
+        !$li.hasClass("frog") &&
+        this.validMoves(neighbor) &&
+        ($pos.data().scanDist > $li.data().scanDist)
       ) {
         neighbors.push(neighbor);
-        $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
+        $li
           .data("class", "visited")
           .addClass("visited")
           .data("parent", pos)
