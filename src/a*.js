@@ -10,25 +10,25 @@ class AStar {
     this.diag = options.diag;
   }
 
-  // async makePath() {
-  //   let positions = [this.endPos];
-  //   // debugger
-  //   while (!positions.includes(this.startPos)) {
-  //     positions.unshift(this.whoIsMyParentCoord(positions[0]));
-  //   }
-  //   for (let i = 0; i < positions.length; i++) {
-  //     const pos = positions[i];
-  //     await this.sleep(25).then(() => {
-  //       $(`li[pos='${pos[0]},${pos[1]}']`)
-  //         .addClass("path")
-  //         .append(
-  //           '<p class="message">' +
-  //             $(`li[pos='${pos[0]},${pos[1]}']`).data().dist +
-  //             "</p>"
-  //         );
-  //     });
-  //   }
-  // }
+  async makePath() {
+    let positions = [this.endPos];
+    // debugger
+    while (!positions.includes(this.startPos)) {
+      positions.unshift(this.whoIsMyParentCoord(positions[0]));
+    }
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i];
+      await this.sleep(25).then(() => {
+        $(`li[pos='${pos[0]},${pos[1]}']`)
+          .addClass("path")
+          .append(
+            '<p class="message">' +
+              $(`li[pos='${pos[0]},${pos[1]}']`).data().dist +
+              "</p>"
+          );
+      });
+    }
+  }
   whoIsMyParent(pos) {
     parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
     // debugger
@@ -54,28 +54,12 @@ class AStar {
     //CHANGE FROM POS TO CLASS for DIJKSTRA
     return pos[0] === target[0] && pos[1] === target[1];
   }
-  debugMan(nums, target){
-    let numHash = {}
-  
-    for (let i = 0; i < nums.length; i ++){
-      numHash[nums[i]] = i;
-    
 
-    }
-    let numHashVal = (Object.values(numHash))
 
-    for (let i = 0; i < nums.length; i ++){
-      let diff = target - nums[i] 
-      if (numHash.hasOwnProperty(diff) && numHash[diff] !== i){
-        return [i, numHash[diff]]
-      }
-    }
-  }
-
-  preScan(pos, target) {
+  async preScan(pos, target) {
     let queue = [target];
     // debugger
-    this.debugMan([3,3], 6)
+
     //  $(`li[pos='${pos[0]},${pos[1]}']`).data("dist", 0);
     while (!this.hit) {
       let currPos = queue.shift();
@@ -83,6 +67,7 @@ class AStar {
         this.hit = true;
       } else {
         let positions = this.preScanNeighbors(currPos);
+  
         $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
 
         // .append('<p class="message">' + $(`li[pos='${currPos[0]},${currPos[1]}']`).data().scanDist + '</p>')
@@ -131,23 +116,24 @@ class AStar {
       ) {
         neighbors.push(neighbor);
         $li
-        .data({parent: pos})
-        .data({scanDist: this.whoIsMyParent(neighbor).data().scanDist + 1})
-        //below is more for 
-        .addClass("scanned")
-        .data("class", "scanned")
-        // .append(`<p>` + $li.data().scanDist + `</p`);
+          .data({ parent: pos })
+          .data({ scanDist: this.whoIsMyParent(neighbor).data().scanDist + 1 })
+          //below is more for
+          .addClass("scanned")
+          .data("class", "scanned")
+          .append(`<p>` + $li.data().scanDist + `</p`);
         // debugger
       }
     }
     return neighbors;
+    //lets figure this out TOMORROW
   }
   //
   sleep(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
+    return new Promise(resolve => setTimeout(resolve, time));
   }
   async search(pos, target) {
-    this.preScan(pos, target)
+    this.preScan(pos, target);
     this.hit = false;
     // debugger
     let queue = [pos];
@@ -164,11 +150,12 @@ class AStar {
             positions
           );
         });
-
+        
         queue = queue.concat(positions);
       }
     }
-    // this.makePath();
+    // debugger
+    this.makePath();
   }
   neighbors(pos) {
     let moves;
@@ -202,7 +189,7 @@ class AStar {
         !$li.hasClass("visited") &&
         !$li.hasClass("frog") &&
         this.validMoves(neighbor) &&
-        ($pos.data().scanDist > $li.data().scanDist)
+        $pos.data().scanDist > $li.data().scanDist
       ) {
         neighbors.push(neighbor);
         $li
