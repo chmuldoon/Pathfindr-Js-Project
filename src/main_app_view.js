@@ -1,5 +1,8 @@
 import Dijkstra from "./dijkstra";
 import AStar from "./a*";
+import BFS from "./BFS";
+import AStar2 from "./a*v2";
+import AStar3 from "./a*v3";
 
 
 class MainAppView {
@@ -94,9 +97,12 @@ class MainAppView {
       console.log(that.diag);
     })
 
-    $(".makePath").click(function(e){
+    $(".Dijkstra").click(function(e){
       that.dijkstra();
     })
+    $(".BFS").click(function(e) {
+      that.bfs();
+    });
 
 
     
@@ -130,10 +136,21 @@ class MainAppView {
     // debugger
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let dijkstra = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
+    let dijkstra = new AStar3({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
     // return dijkstra.search(end, start);
     return dijkstra.search(start, end);
+
+  }
+  bfs(){
+    // $(".frog")
+    // debugger
+    let start = $(".frog").data().pos
+    let end = $(".finish").data().pos
+    let bfs = new BFS({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
+    // debugger
+    // return bfs.search(end, start);
+    return bfs.search(start, end);
 
   }
   aStart(){
@@ -141,7 +158,7 @@ class MainAppView {
     // debugger
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let aStar = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
+    let aStar = new AStar2({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
     return aStar.search(start, end);
   }
