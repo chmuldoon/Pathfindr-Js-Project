@@ -1,7 +1,7 @@
 import Dijkstra from "./dijkstra";
-import AStar from "./a*";
+
 import BFS from "./BFS";
-import AStar2 from "./a*v2";
+
 import AStar3 from "./a*v3";
 
 
@@ -62,7 +62,7 @@ class MainAppView {
         }
       } else{
         if ($(event.currentTarget).data().class === "frog") {
-          $(event.currentTarget).removeClass("frog").data("class", "blank");
+          $(event.currentTarget).removeClass("frog visited").data("class", "blank");
         } else {
           let pos = $(event.currentTarget).data().pos
           this.addFrog(pos);
@@ -118,6 +118,8 @@ class MainAppView {
     $(`li[pos='${pos[0]},${pos[1]}']`)
       .addClass("frog")
       .addClass("special")
+      .addClass("visited")
+
       .data("class", "frog")
       .data("dist", 0);
   }

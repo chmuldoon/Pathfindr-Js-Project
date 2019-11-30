@@ -80,6 +80,7 @@ class Dijkstra{
     this.makePath()
   }
   
+  
   validMoves(pos){
     return (pos[0] >= 0 && pos[0] < this.height && pos[1] >= 0 && pos[1] < this.width)
   }

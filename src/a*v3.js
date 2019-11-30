@@ -31,6 +31,7 @@ class AStar3 {
     }
   }
 
+
   whoIsMyParent(pos) {
     parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
     return $(`li[pos='${parent[0]},${parent[1]}']`);
@@ -60,52 +61,37 @@ class AStar3 {
   }
   bestDirectionSpot(pos) {
     let bestDirection = this.bestDirection(pos)
-    debugger
     let spot = [pos[0] + bestDirection[0], pos[1] + bestDirection[1]];
-    if (this.validMoves(spot)){
-      return false
-    }else{
-      return spot;
-    }
+    // if(!this.validMoves(spot)) {spot = this.secondBestSpot(pos)}
+    return spot
   }
-  singularSearchCheck(currPos, visited) {
-    let newPos = this.bestDirectionSpot(currPos);
+  secondBestSpot(pos) {
+    let hash = {}
+    this.softNeighbors(pos).forEach(os => hash[this.closeness(os)] = os)
+    return Object.values(hash)[0]
+  }
+  async lineSearch(currPos) {
+    let nextPos = this.bestDirectionSpot(currPos);
+    if (!this.validMoves(nextPos)){
+      nextPos = this.secondBestSpot(currPos)
+    }
+    while(!$(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")){
+      // debugger
+      // await this.sleep(15).then(() => {
 
-    $(`li[pos='${newPos[0]},${newPos[1]}']`)
-      .data("class", "visited")
-      .addClass("visited");
-    if (!visited.includes(newPos)) {
-      visited.push(newPos);
-      visited = [...new Set(visited)];
-    }
-    return newPos;
-  }
-  neighborsToCheck(visited) {
-    let output = [];
-    let moves = [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
-      [1, 1],
-      [-1, -1],
-      [1, -1],
-      [-1, 1]
-    ];
-    visited.forEach(pos => {
-      moves.forEach(dir => {
-        let newPos = [pos[0] + dir[0], pos[1] + dir[1]];
-        if (
-          !$(`li[pos='${newPos[0]},${newPos[1]}']`).hasClass("visited") &&
-          !$(`li[pos='${newPos[0]},${newPos[1]}']`).hasClass("frog") &&
-          this.validMoves(newPos)
-        ) {
-          output.push(newPos);
+        $(`li[pos='${nextPos[0]},${nextPos[1]}']`)
+          .data("class", "visited")
+          .addClass("visited")
+        if(this.searchCheck(nextPos, this.endPos)){
+          this.hit = true
+          return;
         }
-      });
-    });
-    return output;
+        nextPos = this.bestDirectionSpot(nextPos)
+      // })
+      // this.secondBestSpot(nextPos);
+    }
   }
+
   spotNeighbors(pos) {
     let output = [];
     let moves = [
@@ -135,48 +121,91 @@ class AStar3 {
       Math.abs(this.endPos[0] - pos[0]) + Math.abs(this.endPos[1] - pos[1])
     );
   }
+  xDiff(pos) {
+    return Math.abs(Math.abs(this.endPos[1] - pos[1]))
+  }
+  yDiff(pos) {
+    return Math.abs(Math.abs(this.endPos[1] - pos[1]))
+  }
+  closest(){
+    let output = {}
+    this.edgeVisted().forEach(pos =>  {
+      output[this.closeness(pos)] = pos;
+    })
+    let best = parseInt(Object.keys(output)[0])
+    let answer = this.edgeVisted().filter(pos => this.closeness(pos) === best);
+    // debugger
+    return answer
+
+  }
   async search(currPos, target) {
-    let visited = [];
 
     while (!this.hit) {
-      debugger
-      while (this.bestDirectionSpot(currPos)) {
-        debugger;
+      // debugger
+      this.lineSearch(currPos)
+      this.searchGrow();
+      currPos = this.closestCheck();
+      // debugger
+      // let neighbors = [];
+      // visited.forEach(pos => {
+      //   neighbors = neighbors.concat(this.neighbors(pos));
+      // });
+      // visited = visited.concat(neighbors);
+      // currPos = this.closest(neighbors);
 
-        currPos = this.singularSearchCheck(currPos, visited);
-        if (this.searchCheck(currPos, target)) {
-          this.hit = true;
-          console.log("hit");
-          this.makePath();
-          return true;
-        }
-      }
-      let bestPos = this.searchGrow(visited);
-      debugger;
-      currPos = bestPos;
     }
     console.log("hit");
-    this.makePath();
+    // this.makePath();
   }
-  searchGrow(visited) {
-    let newVisted = {};
-    let bestPos;
-    let visitedLoop = visited;
-    this.neighborsToCheck(visitedLoop).forEach(pos => {
-      // debugger
-      if (!visited.includes(pos)) {
-        visited.push(pos);
-      }
-      visited = [...new Set(visited)];
+  closestCheck(){
+    if(this.hit) {return}
 
-      newVisted[this.closeness(pos)] = pos;
-      $(`li[pos='${pos[0]},${pos[1]}']`)
-        .data("class", "visited")
-        .addClass("visited");
-      bestPos = Object.values(newVisted)[0];
+    this.closest().forEach(pos => {
+      this.softNeighbors(pos).forEach(os => {
+        $(`li[pos='${os[0]},${os[1]}']`)
+          .data("class", "visited")
+          .addClass("visited");
+      })
+    })
+    let ss = {}
+    this.closest().forEach(pos => {
+      this.softNeighbors(pos).forEach(os => { 
+        ss[this.closeness(os)] = os ;
+      }) 
+    })
+    let best = Object.values(ss)[0];
+       $(`li[pos='${best[0]},${best[1]}']`)
+         .data("class", "visited")
+         .addClass("visited");
+    return best;
+
+  }
+  softNeighbors(pos){
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+
+    let neighbors = [];
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      const neighbor = [pos[0] + move[0], pos[1] + move[1]];
+      if (
+        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
+        !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
+        this.validMoves(neighbor)
+      ) {
+        neighbors.push(neighbor);
+      }
+    }
+
+    return neighbors 
+  }
+  searchGrow() {
+    if(this.hit) {return}
+    let nodesToSearch = this.edgeVisted();
+
+    nodesToSearch.forEach(pos => {
+      // debugger
+      this.neighbors(pos)
     });
-    debugger;
-    return bestPos;
   }
 
   validMoves(pos) {
@@ -191,16 +220,30 @@ class AStar3 {
   sleep(time) {
     return new Promise(resolve => setTimeout(resolve, time));
   }
+  visited(){
+    return $("li.visited")
+      .toArray()
+      .map(li =>
+        li.attributes[0].nodeValue.split(",").map(num => parseInt(num))
+      );
+  }
+  amIedge(pos){
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    return !moves
+      .map(move => [move[0] + pos[0], move[1] + pos[1]])
+      .every(move =>
+        $(`li[pos='${move[0]},${move[1]}']`).hasClass("visited") ||
+        !this.validMoves(move)
+      );
+  }
+  edgeVisted(){
+    let output = this.visited().filter(pos => this.amIedge(pos))
+    return output;
+  }
   neighbors(pos) {
-    let moves = [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0]
-    ]; //non diag;
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
     let neighbors = [];
-
     for (let i = 0; i < moves.length; i++) {
       const move = moves[i];
       const neighbor = [pos[0] + move[0], pos[1] + move[1]];
@@ -209,16 +252,43 @@ class AStar3 {
         !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
         this.validMoves(neighbor)
       ) {
-        neighbors.push(neighbor);
         $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
           .data("class", "visited")
-          .addClass("visited")
-          .data("parent", pos)
-          .data("dist", this.whoIsMyParent(neighbor).data().dist + 1);
+          .addClass("visited");
+        neighbors.push(neighbor);
       }
     }
-    return neighbors;
+
+    return neighbors
   }
+  // OLDneighbors(pos) {
+  //   let moves = [
+  //     [0, 1],
+  //     [0, -1],
+  //     [1, 0],
+  //     [-1, 0]
+  //   ]; //non diag;
+
+  //   let neighbors = [];
+
+  //   for (let i = 0; i < moves.length; i++) {
+  //     const move = moves[i];
+  //     const neighbor = [pos[0] + move[0], pos[1] + move[1]];
+  //     if (
+  //       !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
+  //       !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
+  //       this.validMoves(neighbor)
+  //     ) {
+  //       neighbors.push(neighbor);
+  //       $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
+  //         .data("class", "visited")
+  //         .addClass("visited")
+  //         .data("parent", pos)
+  //         .data("dist", this.whoIsMyParent(neighbor).data().dist + 1);
+  //     }
+  //   }
+  //   return neighbors;
+  // }
 }
 
 export default AStar3;
