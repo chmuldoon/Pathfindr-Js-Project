@@ -1,8 +1,8 @@
 import Dijkstra from "./dijkstra";
 
 import BFS from "./BFS";
-
-import AStar3 from "./a*v3";
+// import PathMaker from "./pathmaker"
+import AStar from "./a*";
 
 
 class MainAppView {
@@ -77,9 +77,9 @@ class MainAppView {
       for (let rowIdx = 0; rowIdx < that.height; rowIdx++) {
         for (let coldIdx = 0; coldIdx < that.width; coldIdx++) {
           $(`li[pos='${rowIdx},${coldIdx}']`)
-          .removeClass("visited wall path frog finish scanned")
+          .removeClass("visited wall path frog finish colored scanned prescan")
           .addClass("blank")
-          .removeData("dist children parent class scanned")
+          .removeData("dist children parent colored class scanned")
           .empty()
           that.addFrog([9, 10]);
           that.addFinish([9, 30]);
@@ -100,9 +100,15 @@ class MainAppView {
     $(".Dijkstra").click(function(e){
       that.dijkstra();
     })
+    $(".AStar").click(function(e) {
+      that.aStar();
+    });
     $(".BFS").click(function(e) {
       that.bfs();
     });
+    // $(".PathMaker").click(function(e) {
+    //   that.pathMaker();
+    // });
 
 
     
@@ -138,7 +144,7 @@ class MainAppView {
     // debugger
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let dijkstra = new AStar3({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
+    let dijkstra = new Dijkstra({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     // debugger
     // return dijkstra.search(end, start);
     return dijkstra.search(start, end);
@@ -155,17 +161,13 @@ class MainAppView {
     return bfs.search(start, end);
 
   }
-  aStart(){
-    // $(".frog")
-    // debugger
+  aStar(){
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
-    let aStar = new AStar2({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
-    // debugger
+    let aStar = new AStar({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
     return aStar.search(start, end);
   }
 
-  //end of testing
   toggleWall(eventTarget){
     if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("special")) {
       $(eventTarget).addClass("wall")

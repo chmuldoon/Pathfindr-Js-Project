@@ -1,6 +1,7 @@
 import TileNode from "./tile_node";
+// import PathMaker from "./pathmaker";
 
-class AStar3 {
+class AStar {
   constructor(options) {
     this.startPos = options.startPos;
     this.endPos = options.endPos;
@@ -9,28 +10,55 @@ class AStar3 {
     this.$el = options.$el;
     this.hit = options.hit || false;
     this.diag = options.diag;
+    this.visitArr = [this.startPos]
   }
-
-  async makePath() {
-    let positions = [this.endPos];
+  async makePath(){
+    let positions = [this.endPos]
     // debugger
-    while (!positions.includes(this.startPos)) {
-      positions.unshift(this.whoIsMyParentCoord(positions[0]));
+    while(!positions.includes(this.startPos)){
+      positions.unshift(this.whoIsMyParentCoord(positions[0]))
     }
     for (let i = 0; i < positions.length; i++) {
       const pos = positions[i];
-      await this.sleep(25).then(() => {
-        $(`li[pos='${pos[0]},${pos[1]}']`)
-          .addClass("path")
-          .append(
-            '<p class="message">' +
-              $(`li[pos='${pos[0]},${pos[1]}']`).data().dist +
-              "</p>"
-          );
-      });
+      await this.sleep(40).then(() => {
+        $(`li[pos='${pos[0]},${pos[1]}']`).addClass("path")
+          // .append('<p class="message">' + $(`li[pos='${pos[0]},${pos[1]}']`).data().dist + '</p>')
+      })
     }
   }
+  async vistedSearch(start, target){
+    // debugger
+    let queue = [start]
+    while (!this.hit) {
+      let currPos = queue.shift();
+      if (this.searchCheck(currPos, target)) {
+        this.hit = true;
+      } else {
+        let positions = this.visitedNeighbors(currPos);
 
+        $(`li[pos='${currPos[0]},${currPos[1]}']`).data("children", positions);
+        queue = queue.concat(positions);
+      }
+    }
+    this.makePath()
+  }
+  visitedNeighbors(pos){
+    let moves = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]]
+    let neighbors = moves
+      .map(move => [move[0] + pos[0], move[1] + pos[1]])
+      .filter(
+        os =>
+          $(`li[pos='${os[0]},${os[1]}']`).hasClass("visited") &&
+          !$(`li[pos='${os[0]},${os[1]}']`).hasClass("prescan")
+      );
+      neighbors.forEach(neighbor => {
+        $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
+          .addClass("prescan")
+          .data("parent", pos)
+          .data("dist", (this.whoIsMyParent(neighbor).data().dist + 1))
+      })
+    return neighbors;
+  }
 
   whoIsMyParent(pos) {
     parent = $(`li[pos='${pos[0]},${pos[1]}']`).data().parent;
@@ -70,25 +98,23 @@ class AStar3 {
     this.softNeighbors(pos).forEach(os => hash[this.closeness(os)] = os)
     return Object.values(hash)[0]
   }
-  async lineSearch(currPos) {
+  lineSearch(currPos) {
     let nextPos = this.bestDirectionSpot(currPos);
     if (!this.validMoves(nextPos)){
       nextPos = this.secondBestSpot(currPos)
     }
     while(!$(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")){
       // debugger
-      // await this.sleep(15).then(() => {
 
         $(`li[pos='${nextPos[0]},${nextPos[1]}']`)
           .data("class", "visited")
           .addClass("visited")
+        this.visitArr.push(nextPos)
         if(this.searchCheck(nextPos, this.endPos)){
           this.hit = true
           return;
         }
         nextPos = this.bestDirectionSpot(nextPos)
-      // })
-      // this.secondBestSpot(nextPos);
     }
   }
 
@@ -141,22 +167,26 @@ class AStar3 {
   async search(currPos, target) {
 
     while (!this.hit) {
-      // debugger
       this.lineSearch(currPos)
       this.searchGrow();
       currPos = this.closestCheck();
-      // debugger
-      // let neighbors = [];
-      // visited.forEach(pos => {
-      //   neighbors = neighbors.concat(this.neighbors(pos));
-      // });
-      // visited = visited.concat(neighbors);
-      // currPos = this.closest(neighbors);
-
     }
+    for (let i = 0; i < this.visitArr.length; i++) {
+      const pos = this.visitArr[i];
+      // debugger
+      await this.sleep(40).then(() => { 
+        $(`li[pos='${pos[0]},${pos[1]}']`)
+          .data("class", "colored")
+          .addClass("colored")
+      })
+    }
+
     console.log("hit");
-    // this.makePath();
+    this.hit = false;
+    this.vistedSearch(this.startPos, this.endPos)
   }
+
+
   closestCheck(){
     if(this.hit) {return}
 
@@ -165,6 +195,7 @@ class AStar3 {
         $(`li[pos='${os[0]},${os[1]}']`)
           .data("class", "visited")
           .addClass("visited");
+        this.visitArr.push(os);
       })
     })
     let ss = {}
@@ -177,6 +208,8 @@ class AStar3 {
        $(`li[pos='${best[0]},${best[1]}']`)
          .data("class", "visited")
          .addClass("visited");
+        this.visitArr.push(best);
+
     return best;
 
   }
@@ -255,6 +288,7 @@ class AStar3 {
         $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
           .data("class", "visited")
           .addClass("visited");
+        this.visitArr.push(neighbor)
         neighbors.push(neighbor);
       }
     }
@@ -291,4 +325,4 @@ class AStar3 {
   // }
 }
 
-export default AStar3;
+export default AStar;
