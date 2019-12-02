@@ -6,7 +6,7 @@ class BFS{
     this.width = options.width;
     this.$el = options.$el;
     this.hit = options.hit || false;
-    this.diag = options.diag;
+    // this.diag = options.diag;
   }
 
   async makePath(){

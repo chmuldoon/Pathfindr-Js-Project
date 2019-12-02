@@ -23,7 +23,6 @@ class Dijkstra{
       const pos = positions[i];
       await this.sleep(25).then(() => {
         $(`li[pos='${pos[0]},${pos[1]}']`).addClass("path")
-          .append('<p class="message">' + $(`li[pos='${pos[0]},${pos[1]}']`).data().dist + '</p>')
       })
     }
   }
