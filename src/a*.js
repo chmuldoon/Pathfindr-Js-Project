@@ -11,6 +11,7 @@ class AStar {
     this.hit = options.hit || false;
     this.diag = options.diag;
     this.visitArr = [this.startPos]
+    this.spaceError = false
   }
   async makePath(){
     let positions = [this.endPos]
@@ -104,6 +105,11 @@ class AStar {
     if (!this.validMoves(currPos, nextPos)){
       nextPos = this.secondBestSpot(currPos)
     }
+    if (nextPos === undefined) {
+      // debugger;
+      this.spaceError = true;
+      return this.startPos;
+    }
     while(!$(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")){
         if (!this.validMoves(currPos, nextPos)) {
           nextPos = this.secondBestSpot(currPos);
@@ -123,6 +129,11 @@ class AStar {
     }
   }
   closeness(pos) {
+    if(pos === undefined){
+      // debugger
+      this.spaceError = true
+      return this.startPos
+    }
     return (
       Math.abs(this.endPos[0] - pos[0]) + Math.abs(this.endPos[1] - pos[1])
     );
@@ -145,13 +156,17 @@ class AStar {
 
   }
   async search(currPos, target) {
+    $(".Errors").empty()
     // debugger
-    while (!this.hit) {
+    while (!this.hit && !this.spaceError) {
+      // debugger
       this.lineSearch(currPos)
       // debugger
       this.searchGrow();
       // debugger
-      currPos = this.closestCheck();
+      if(!this.spaceError){
+        currPos = this.closestCheck();
+      }
     }
     for (let i = 0; i < this.visitArr.length; i++) {
       const pos = this.visitArr[i];
@@ -162,10 +177,14 @@ class AStar {
           .addClass("colored")
       })
     }
+    if(this.spaceError){
+      $(".Errors").append("<b>No possible route, clear path, edit walls and try again.</b>")
+      this.spaceError = false;
 
-    console.log("hit");
-    this.hit = false;
-    this.vistedSearch(this.startPos, this.endPos)
+    }else{
+      this.hit = false;
+      this.vistedSearch(this.startPos, this.endPos);
+    }
   }
 
 
@@ -187,6 +206,11 @@ class AStar {
       }) 
     })
     let best = Object.values(ss)[0];
+    if (best === undefined) {
+      // debugger;
+      this.spaceError = true;
+      return this.startPos;
+    }
        $(`li[pos='${best[0]},${best[1]}']`)
          .data("class", "visited")
          .addClass("visited");
@@ -217,6 +241,7 @@ class AStar {
     // debugger
     if(this.hit) {return}
     let closest = this.closeness(this.closest()[0])
+    if (this.spaceError) {return}
     let nodesToSearch = this.edgeVisted();
     nodesToSearch = nodesToSearch.filter(
       os => (this.closeness(os) - closest) <= 6

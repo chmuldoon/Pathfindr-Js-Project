@@ -59,19 +59,15 @@ class MainAppView {
     
     this.$el.on("dblclick", "li", event => {
       if (event.shiftKey){
-        if ($(event.currentTarget).data().class === "finish") {
-          $(event.currentTarget).removeClass("finish").data("class", "blank");
-        } else {
+          $(".finish").removeClass("finish").data("class", "blank");
+
           let pos = $(event.currentTarget).data().pos
           this.addFinish(pos);
-        }
       } else{
-        if ($(event.currentTarget).data().class === "frog") {
-          $(event.currentTarget).removeClass("frog visited").data("class", "blank");
-        } else {
+          $(".frog").removeClass("frog visited").data("class", "blank");
+
           let pos = $(event.currentTarget).data().pos
           this.addFrog(pos);
-        }
       }
     })
     const that = this;
@@ -107,16 +103,17 @@ class MainAppView {
         }
       }
     });
-    // $(".diag").click(function (e) {
-    //   if(that.diag === false){
-    //     that.diag = true
-    //     $(".diag").empty().append("Diagonal On");
-    //   }else{
-    //     that.diag = false
-    //     $(".diag").empty().append("Diagonal Off");
-    //   }
-    //   console.log(that.diag);
-    // })
+    $(".Diag").click(function (e) {
+      if(that.diag === false){
+        that.diag = true
+        $(".Diag").empty().append("Diagonal Path <b>On</b>");
+      }else{
+        that.diag = false
+        $(".Diag")
+          .empty()
+          .append("Diagonal Path <b>Off</b>");
+      }
+    })
 
     $(".Dijkstra").click(function(e){
       that.dijkstra();
@@ -147,9 +144,9 @@ class MainAppView {
     // console.log(event.currentTarget.className)
   }
   addPath(pos){
-    $(`li[pos='${pos[0]},${pos[1]}']`)
-      .addClass("path")
-      .data("class", "path");
+      $(`li[pos='${pos[0]},${pos[1]}']`)
+        .addClass("path")
+        .data("class", "path");
   }
 
   addFrog(pos) {
@@ -157,7 +154,6 @@ class MainAppView {
       .addClass("frog")
       .addClass("special")
       .addClass("visited")
-
       .data("class", "frog")
       .data("dist", 0);
   }
