@@ -20,7 +20,7 @@ class AStar {
     }
     for (let i = 0; i < positions.length; i++) {
       const pos = positions[i];
-      await this.sleep(40).then(() => {
+      await this.sleep(30).then(() => {
         $(`li[pos='${pos[0]},${pos[1]}']`).addClass("path")
           // .append('<p class="message">' + $(`li[pos='${pos[0]},${pos[1]}']`).data().dist + '</p>')
       })
@@ -48,6 +48,7 @@ class AStar {
       .map(move => [move[0] + pos[0], move[1] + pos[1]])
       .filter(
         os =>
+          this.validMoves(pos, os) &&
           $(`li[pos='${os[0]},${os[1]}']`).hasClass("visited") &&
           !$(`li[pos='${os[0]},${os[1]}']`).hasClass("prescan")
       );
@@ -99,12 +100,14 @@ class AStar {
     return Object.values(hash)[0]
   }
   lineSearch(currPos) {
-    let nextPos = this.bestDirectionSpot(currPos);
-    if (!this.validMoves(nextPos)){
+    let nextPos = this.bestDirectionSpot(currPos); 
+    if (!this.validMoves(currPos, nextPos)){
       nextPos = this.secondBestSpot(currPos)
     }
     while(!$(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")){
-      // debugger
+        if (!this.validMoves(currPos, nextPos)) {
+          nextPos = this.secondBestSpot(currPos);
+        }
 
         $(`li[pos='${nextPos[0]},${nextPos[1]}']`)
           .data("class", "visited")
@@ -114,33 +117,10 @@ class AStar {
           this.hit = true
           return;
         }
+        currPos = nextPos
         nextPos = this.bestDirectionSpot(nextPos)
-    }
-  }
 
-  spotNeighbors(pos) {
-    let output = [];
-    let moves = [
-      [0, 1],
-      [0, -1],
-      [1, 0],
-      [-1, 0],
-      [1, 1],
-      [-1, -1],
-      [1, -1],
-      [-1, 1]
-    ];
-    moves.forEach(dir => {
-      let newPos = [pos[0] + dir[0], pos[1] + dir[1]];
-      if (
-        !$(`li[pos='${newPos[0]},${newPos[1]}']`).hasClass("visited") &&
-        !$(`li[pos='${newPos[0]},${newPos[1]}']`).hasClass("frog") &&
-        this.validMoves(newPos)
-      ) {
-        output.push(newPos);
-      }
-    });
-    return output;
+    }
   }
   closeness(pos) {
     return (
@@ -165,16 +145,18 @@ class AStar {
 
   }
   async search(currPos, target) {
-
+    // debugger
     while (!this.hit) {
       this.lineSearch(currPos)
+      // debugger
       this.searchGrow();
+      // debugger
       currPos = this.closestCheck();
     }
     for (let i = 0; i < this.visitArr.length; i++) {
       const pos = this.visitArr[i];
       // debugger
-      await this.sleep(40).then(() => { 
+      await this.sleep(25).then(() => { 
         $(`li[pos='${pos[0]},${pos[1]}']`)
           .data("class", "colored")
           .addClass("colored")
@@ -189,7 +171,7 @@ class AStar {
 
   closestCheck(){
     if(this.hit) {return}
-
+    // debugger
     this.closest().forEach(pos => {
       this.softNeighbors(pos).forEach(os => {
         $(`li[pos='${os[0]},${os[1]}']`)
@@ -223,7 +205,7 @@ class AStar {
       if (
         !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
         !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
-        this.validMoves(neighbor)
+        this.validMoves(pos, neighbor)
       ) {
         neighbors.push(neighbor);
       }
@@ -232,23 +214,38 @@ class AStar {
     return neighbors 
   }
   searchGrow() {
+    // debugger
     if(this.hit) {return}
+    let closest = this.closeness(this.closest()[0])
     let nodesToSearch = this.edgeVisted();
+    nodesToSearch = nodesToSearch.filter(
+      os => (this.closeness(os) - closest) <= 6
+    );
+    // debugger
 
     nodesToSearch.forEach(pos => {
       // debugger
       this.neighbors(pos)
     });
   }
+  subPos(pos, nextPos){
+    let dir = [nextPos[0] - pos[0], nextPos[1] - pos[1]]
+    let sub1 = [pos[0] + dir[0], pos[1]]
+    let sub2 = [pos[0], pos[1] + dir[1]];
+    return [sub1, sub2]
 
-  validMoves(pos) {
-    return (
-      pos[0] >= 0 &&
-      pos[0] < this.height &&
-      pos[1] >= 0 &&
-      pos[1] < this.width &&
-      !$(`li[pos='${pos[0]},${pos[1]}']`).hasClass("wall")
-    );
+  }
+
+  validMoves(pos, nextPos) {
+
+    if (!(nextPos[0] >= 0)) {return false}
+    if (!(nextPos[0] < this.height)) {return false}
+    if (!(nextPos[1] >= 0)) {return false}
+    if (!(nextPos[1] < this.width)) {return false}
+    if ($(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")) {return false}
+    if (this.subPos(pos, nextPos).every(os => $(`li[pos='${os[0]},${os[1]}']`).hasClass("wall"))){return false}
+    return true;
+
   }
   sleep(time) {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -266,7 +263,7 @@ class AStar {
       .map(move => [move[0] + pos[0], move[1] + pos[1]])
       .every(move =>
         $(`li[pos='${move[0]},${move[1]}']`).hasClass("visited") ||
-        !this.validMoves(move)
+        !this.validMoves(pos, move)
       );
   }
   edgeVisted(){
@@ -283,7 +280,7 @@ class AStar {
       if (
         !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
         !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
-        this.validMoves(neighbor)
+        this.validMoves(pos, neighbor)
       ) {
         $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
           .data("class", "visited")
@@ -295,34 +292,6 @@ class AStar {
 
     return neighbors
   }
-  // OLDneighbors(pos) {
-  //   let moves = [
-  //     [0, 1],
-  //     [0, -1],
-  //     [1, 0],
-  //     [-1, 0]
-  //   ]; //non diag;
-
-  //   let neighbors = [];
-
-  //   for (let i = 0; i < moves.length; i++) {
-  //     const move = moves[i];
-  //     const neighbor = [pos[0] + move[0], pos[1] + move[1]];
-  //     if (
-  //       !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("visited") &&
-  //       !$(`li[pos='${neighbor[0]},${neighbor[1]}']`).hasClass("frog") &&
-  //       this.validMoves(neighbor)
-  //     ) {
-  //       neighbors.push(neighbor);
-  //       $(`li[pos='${neighbor[0]},${neighbor[1]}']`)
-  //         .data("class", "visited")
-  //         .addClass("visited")
-  //         .data("parent", pos)
-  //         .data("dist", this.whoIsMyParent(neighbor).data().dist + 1);
-  //     }
-  //   }
-  //   return neighbors;
-  // }
 }
 
 export default AStar;

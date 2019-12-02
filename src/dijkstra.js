@@ -54,7 +54,7 @@ class Dijkstra{
     }
     for (let i = 0; i < this.visitArr.length; i++) {
       const pos = this.visitArr[i];
-      await this.sleep(40).then(() => {
+      await this.sleep(25).then(() => {
         $(`li[pos='${pos[0]},${pos[1]}']`)
           .data("class", "colored")
           .addClass("colored");

@@ -53,7 +53,10 @@ class MainAppView {
     //but thats hard as of now
     //NOTES: PLACEMENT WORKS HOWEVER still need to limit amount for now,
     // 
-
+    this.$el.on("mouseleave", "li", event => {
+      this.over = false;
+    });
+    
     this.$el.on("dblclick", "li", event => {
       if (event.shiftKey){
         if ($(event.currentTarget).data().class === "finish") {
@@ -133,6 +136,7 @@ class MainAppView {
         that.draw = true
       }
     });
+    
 
     // $(".PathMaker").click(function(e) {
     //   that.pathMaker();
