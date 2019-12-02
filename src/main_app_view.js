@@ -14,6 +14,7 @@ class MainAppView {
     this.height = 20;
     this.width = 40;
     this.diag = false;
+    this.draw = true
     //testing 
     //add frogs finish and dijkstra when you can
     this.makeGrid();
@@ -41,7 +42,8 @@ class MainAppView {
     })
     //draws walls and removes
     this.$el.on("mouseenter", "li", (event => {
-      this.toggleWall(event.currentTarget)
+      // debugger
+      this.drawErase(event.currentTarget)
       this.over = true
     }));
     this.$el.on("mouseleave", "li", event => {
@@ -51,22 +53,21 @@ class MainAppView {
     //but thats hard as of now
     //NOTES: PLACEMENT WORKS HOWEVER still need to limit amount for now,
     // 
-
+    this.$el.on("mouseleave", "li", event => {
+      this.over = false;
+    });
+    
     this.$el.on("dblclick", "li", event => {
       if (event.shiftKey){
-        if ($(event.currentTarget).data().class === "finish") {
-          $(event.currentTarget).removeClass("finish").data("class", "blank");
-        } else {
+          $(".finish").removeClass("finish").data("class", "blank");
+
           let pos = $(event.currentTarget).data().pos
           this.addFinish(pos);
-        }
       } else{
-        if ($(event.currentTarget).data().class === "frog") {
-          $(event.currentTarget).removeClass("frog visited").data("class", "blank");
-        } else {
+          $(".frog").removeClass("frog visited").data("class", "blank");
+
           let pos = $(event.currentTarget).data().pos
           this.addFrog(pos);
-        }
       }
     })
     const that = this;
@@ -86,15 +87,32 @@ class MainAppView {
         }
       }
     })
-    $(".diag").click(function (e) {
+    $(".clearPath").click(function(e) {
+      // debugger
+      for (let rowIdx = 0; rowIdx < that.height; rowIdx++) {
+        for (let coldIdx = 0; coldIdx < that.width; coldIdx++) {
+          if (!$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("wall") ||
+              !$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("finish") ||
+              !$(`li[pos='${rowIdx},${coldIdx}']`).hasClass("frog")){
+                $(`li[pos='${rowIdx},${coldIdx}']`)
+                  .removeClass("visited path colored scanned prescan")
+                  .addClass("blank")
+                  .removeData("dist children parent colored class scanned")
+                  .empty();
+              }
+        }
+      }
+    });
+    $(".Diag").click(function (e) {
       if(that.diag === false){
         that.diag = true
-        $(".diag").empty().append("Diagonal On");
+        $(".Diag").empty().append("Diagonal Path <b>On</b>");
       }else{
         that.diag = false
-        $(".diag").empty().append("Diagonal Off");
+        $(".Diag")
+          .empty()
+          .append("Diagonal Path <b>Off</b>");
       }
-      console.log(that.diag);
     })
 
     $(".Dijkstra").click(function(e){
@@ -106,6 +124,17 @@ class MainAppView {
     $(".BFS").click(function(e) {
       that.bfs();
     });
+    $(".DrawErase").click(function(e){
+      if(that.draw){
+        $(".DrawErase").empty().append("Draw / <b>Erase<b>")
+        that.draw = false
+      }else{
+        $(".DrawErase").empty().append("<b>Draw</b> / Erase")
+        that.draw = true
+      }
+    });
+    
+
     // $(".PathMaker").click(function(e) {
     //   that.pathMaker();
     // });
@@ -115,9 +144,9 @@ class MainAppView {
     // console.log(event.currentTarget.className)
   }
   addPath(pos){
-    $(`li[pos='${pos[0]},${pos[1]}']`)
-      .addClass("path")
-      .data("class", "path");
+      $(`li[pos='${pos[0]},${pos[1]}']`)
+        .addClass("path")
+        .data("class", "path");
   }
 
   addFrog(pos) {
@@ -125,7 +154,6 @@ class MainAppView {
       .addClass("frog")
       .addClass("special")
       .addClass("visited")
-
       .data("class", "frog")
       .data("dist", 0);
   }
@@ -140,24 +168,19 @@ class MainAppView {
   }
   //testing
   dijkstra(){
-    // $(".frog")
-    // debugger
+
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
     let dijkstra = new Dijkstra({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
-    // debugger
-    // return dijkstra.search(end, start);
     return dijkstra.search(start, end);
 
   }
   bfs(){
-    // $(".frog")
-    // debugger
+
     let start = $(".frog").data().pos
     let end = $(".finish").data().pos
     let bfs = new BFS({ startPos: start, endPos: end, width: this.width, height: this.height, $el: this.$el, diag: this.diag})
-    // debugger
-    // return bfs.search(end, start);
+
     return bfs.search(start, end);
 
   }
@@ -168,25 +191,24 @@ class MainAppView {
     return aStar.search(start, end);
   }
 
-  toggleWall(eventTarget){
-    if (this.helDown && !$(eventTarget).hasClass("wall") && !$(eventTarget).hasClass("special")) {
+  drawErase(eventTarget){
+    if (this.helDown && !$(eventTarget).hasClass("special")) {
+      this.draw ?
       $(eventTarget).addClass("wall")
-        .data("class", "wall");
-
-      // $(eventTarget).data().node.value = "obstacle";
-    
-    } else if (this.helDown && ($(eventTarget).hasClass("wall"))) {
+        .data("class", "wall")
+      :
       $(eventTarget).removeClass("wall")
         .data("class", "blank");
 
-      // $(eventTarget).data().node.value = null;
-    }
+    } 
+    
+    // else if (this.helDown && ($(eventTarget).hasClass("wall"))) {
+    //   $(eventTarget).removeClass("wall")
+    //     .data("class", "blank");
+
+    //   // $(eventTarget).data().node.value = null;
+    // }
   }
-
-  moveFrog(){
-
-  }
-
   makeGrid() {
     //creates the grid
     const $ul = $("<ul>")
