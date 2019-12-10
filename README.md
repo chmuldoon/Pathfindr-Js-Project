@@ -4,7 +4,7 @@
 ## Summary 
   Pathfindr is an interactive visualization of pathfinding algorithms. It was created over the course of a week with
   the usage of Node.js and Jquery. The user may move start and end points, as well as create obstacles and paths.
-  The current version uses [Dijkstra's Shortest Path First Algorithm], however an A* version is in development. 
+  The current version visualizes a Breadth First Search, [Dijkstra's Shortest Path First Algorithm], and A* Search Alogrithm.  
   
   
   
@@ -13,5 +13,4 @@
 
 ## Instructions 
 Use the mouse to draw and erase walls
-Double click the starting position to remove and place 
-Shift + double click the ending position to remove and place
+Double click a tile to move the start
