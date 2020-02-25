@@ -85,13 +85,13 @@ li:hover {
   background-color: dimgray;;
   /* border: .2px solid #4cc7f8;; */
 }
-.visited{
+/* .visited{
   /* background-color: lightgreen; */
-  background-color: yellow ;
+  /* background-color: yellow ; */
   /* z-index: 5; */
   /* opacity: 1; */
   /* border: .2px solid #8BF28B;; */
-}
+} */
 .visited p{
   margin-top: 6px;
   color:#8BF28B;
