@@ -87,7 +87,7 @@ li:hover {
 }
 .visited{
   /* background-color: lightgreen; */
-  /* background-color: yellow ; */
+  background-color: yellow ;
   /* z-index: 5; */
   /* opacity: 1; */
   /* border: .2px solid #8BF28B;; */
@@ -152,3 +152,6 @@ li:hover {
 /* .prescan {
   background-color: RED;
 } */
+.dye{
+  background-color: brown;
+}

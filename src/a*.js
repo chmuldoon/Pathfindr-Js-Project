@@ -95,6 +95,12 @@ class AStar {
     // if(!this.validMoves(spot)) {spot = this.secondBestSpot(pos)}
     return spot
   }
+  dye(pos){
+    $(`li[pos='${pos[0]},${pos[1]}']`)
+      .data("class", "dye")
+      .addClass("dye");
+
+  }
   secondBestSpot(pos) {
     let hash = {}
     this.softNeighbors(pos).forEach(os => hash[this.closeness(os)] = os)
@@ -104,11 +110,12 @@ class AStar {
     let nextPos = this.bestDirectionSpot(currPos); 
     if (!this.validMoves(currPos, nextPos)){
       nextPos = this.secondBestSpot(currPos)
-    }
+    } 
+    // debugger
     if (nextPos === undefined) {
       // debugger;
-      this.spaceError = true;
-      return this.startPos;
+      // this.spaceError = true;
+      return this.currPos;
     }
     while(!$(`li[pos='${nextPos[0]},${nextPos[1]}']`).hasClass("wall")){
         if (!this.validMoves(currPos, nextPos)) {
