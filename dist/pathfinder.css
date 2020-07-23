@@ -21,7 +21,7 @@ body {
   border-top: .5px solid gray;
 
   height: 404px;
-  width: 809px;
+  width: 860px;
 }
 
 h1 {
@@ -76,9 +76,6 @@ li:hover {
 
 }
 
-.scanned {
-  /* background-color: red; */
-}
 
 .wall {
 
